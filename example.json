@@ -1,0 +1,12 @@
+{
+    "place_id": "place1",
+    "category_id": "cat1",
+    "name": "Taman Wisata Margasatwa",
+    "description": "Taman ini merupakan tempat rekreasi",
+    "city": "Yogyakarta",
+    "price": 25000.0,
+    "lat": 0.5,
+    "lng": 0.0,
+    "rating": 4.5,
+    "image": "http://www.bko"
+}

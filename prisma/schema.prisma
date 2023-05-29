@@ -1,0 +1,31 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Place {
+  id          String   @id
+  category    Category @relation(fields: [category_id], references: [id])
+  category_id String
+  name        String
+  description String
+  city        String
+  price       Float
+  lat         Float
+  lng         Float
+  rating      Float
+  image       String
+}
+
+model Category {
+  id    String  @id
+  name  String  @unique
+  Place Place[]
+}

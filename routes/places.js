@@ -1,5 +1,5 @@
 const express = require('express');
-const { nanoid } = require('nanoid');
+const { v4: uuidv4 } = require('uuid');
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -10,7 +10,7 @@ router.use(express.json());
 // Create a new place
 router.post('/', async (req, res) => {
     const { category_id, name, description, city, price, lat, lng, rating, image } = req.body;
-    const id = nanoid(16);
+    const id = uuidv4();
     try {
       const place = await prisma.place.create({
         data: {

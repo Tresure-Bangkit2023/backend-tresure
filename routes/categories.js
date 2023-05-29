@@ -1,5 +1,5 @@
 const express = require('express');
-const { nanoid } = require('nanoid');
+const { v4: uuidv4 } = require('uuid');
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -10,7 +10,7 @@ router.use(express.json());
 // Add a new category
 router.post('/', async (req, res) => {
     const { name } = req.body;
-    const id = nanoid(16);
+    const id = uuidv4();
     try {
       const category = await prisma.category.create({
         data: {

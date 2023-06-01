@@ -10,22 +10,73 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Category {
+  id    String  @id
+  name  String  @unique
+  Place Place[]
+}
+
+model User {
+  id       String @id
+  username String @unique
+  password String
+  plan     Plan[]
+  ratings  Rating[]  @relation("UserRatings")
+}
+
+model Plan {
+  id             String      @id
+  user           User        @relation(fields: [user_id], references: [id])
+  places         Place[]     @relation("PlanPlace")
+  user_id        String
+  title          String
+  num_of_people  Int
+  city           String
+  start_location String
+  start_time     DateTime
+  PlanPlace      PlanPlace[]
+}
+
 model Place {
-  id          String   @id
-  category    Category @relation(fields: [category_id], references: [id])
+  id          String      @id
+  category    Category    @relation(fields: [category_id], references: [id])
   category_id String
   name        String
-  description String
+  description String?
   city        String
   price       Float
   lat         Float
   lng         Float
   rating      Float
   image       String
+  plans       Plan[]      @relation("PlanPlace")
+  PlanPlace   PlanPlace[]
+  ratings     Rating[]  @relation("PlaceRatings")
 }
 
-model Category {
-  id    String  @id
-  name  String  @unique
-  Place Place[]
+model PlanPlace {
+  id              String   @id
+  plan_id         String
+  place_id        String
+  depart_time     DateTime
+  transport_mode  String?
+  transport_price String?
+
+  plan  Plan  @relation(fields: [plan_id], references: [id])
+  place Place @relation(fields: [place_id], references: [id])
+
+  @@unique([plan_id, place_id])
+}
+
+model Rating{
+  id         String    @id 
+  rating     Float
+  
+  userId     String
+  placeId    String
+
+  user       User   @relation("UserRatings", fields: [userId], references: [id])
+  place      Place  @relation("PlaceRatings", fields: [placeId], references: [id])
+
+  @@unique([userId, placeId])
 }

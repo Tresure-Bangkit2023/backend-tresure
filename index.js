@@ -1,6 +1,10 @@
 const express = require('express');
+
 const placesRouter = require('./routes/places');
 const categoryRouter = require('./routes/categories');
+const userRouter = require('./routes/users')
+const planRouter = require('./routes/plans')
+const planPlaceRouter = require('./routes/plan_places')
 
 const app = express();
 const port = 3000;
@@ -19,6 +23,10 @@ app.use((req, res, next) => {
 // Use the places router for /places routes
 app.use('/places', placesRouter);
 app.use('/categories', categoryRouter);
+app.use('/users', userRouter);
+app.use('/plans', planRouter);
+app.use('/planplace', planPlaceRouter);
+
 
 // Start the server
 app.listen(port, () => {

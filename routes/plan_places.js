@@ -30,19 +30,52 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Retrieve all places
+// Retrieve all plan places
 router.get('/', async (req, res) => {
     try {
         const planPlaces = await prisma.planPlace.findMany();
 
         if(Object.keys(planPlaces).length > 0)
             res.json(planPlaces);
-        else res.json({message : 'No Places yet in that plan!'})
+        else res.json({message : 'No Plan Places Yet!'})
         } 
     catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
     }
+});
+
+// Edit Plan Places by ID
+router.put('/:id', async (req, res) => {
+  const planPlaceId = req.params.id;
+  const { plan_id, place_id, depart_time, transport_mode, transport_price} = req.body;
+  
+  const depart_time_ = new Date(depart_time) 
+
+  try {
+      const planPlaces = await prisma.planPlace.update({
+          data: {
+              plan_id,
+              place_id,
+              depart_time_,
+              transport_mode,
+              transport_price
+          },
+          where: {
+              id: planPlaceId
+          }
+      })
+
+      res.json({message : 'Plan place successfully updated'});
+  } 
+  catch (error) {
+      if (error['meta']['cause'].includes('not found')){
+          res.status(404).json({ message: 'Plan place not found with that ID' });
+      }
+      else{
+          res.status(500).json({ message: 'Internal server error' });
+      }
+  }
 });
 
 // // // Retrieve a specific place by ID

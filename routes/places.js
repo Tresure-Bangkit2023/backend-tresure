@@ -70,7 +70,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// // Update a place by ID
+// Update a place by ID
 router.put('/:id', async (req, res) => {
     const placeId = req.params.id;
     const { category_id, name, description, city, price, lat, lng, rating, image } = req.body;
@@ -105,7 +105,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// // Delete a place by ID
+// Delete a place by ID
 router.delete('/:id', async (req, res) => {
   const placeId = req.params.id;
     try {

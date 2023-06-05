@@ -54,12 +54,20 @@ router.get('/:id', async (req, res) => {
         const plans = await prisma.plan.findUnique({
             where: {
                 id: planId
+            },
+            include : {
+                PlanPlace: true
             }
         })
         
         if(plans === null) 
             res.status(404).json({ message: 'Plan not found with that ID' });
         
+        if (plans.PlanPlace.length === 0) {
+            plans.PlanPlace = 'No place added yet in this plan!';
+            res.json(plans);
+        }
+            
         else res.json(plans);
     } 
     catch (error) {
@@ -102,7 +110,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// // Delete a place by ID
+// Delete a place by ID
 router.delete('/:id', async (req, res) => {
   const planId = req.params.id;
     try {

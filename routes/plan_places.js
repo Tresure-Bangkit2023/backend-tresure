@@ -7,37 +7,50 @@ const prisma = new PrismaClient();
 const router = express.Router();
 router.use(express.json());
 
-// Create a new plan place
 router.post('/', async (req, res) => {
     const { plan_id, place_id, depart_time, transport_mode, transport_price} = req.body;
     const id = uuidv4();
+    
     try {
+      const depart_time_ = new Date(depart_time)
+      
+      if (isNaN(start_time_.getTime())){
+        return res.status(404).json({message : 'Please input a valid date time!'})
+      };
+
+      const isPlanIdValid = await prisma.plan.findUnique({
+          where: {id : plan_id},
+      });
+
+      if (!isPlanIdValid){
+        return res.status(404).json({message : 'Plan id not found!'});
+      };
+
+      const isPlaceIdValid = await prisma.place.findUnique({
+        where: {id : place_id},
+      });
+
+      if (!isPlaceIdValid){
+        return res.status(404).json({message : 'Place id not found!'});
+      };
+      
       const planPlace = await prisma.planPlace.create({
         data: {
           id,
           plan_id,
           place_id,
-          depart_time,
+          depart_time : depart_time_,
           transport_mode,
           transport_price,
         },
       });
   
-      res.json({ message: 'Place successfull added to that plan', planPlaceId: planPlace.id });
+      res.json({ message: 'Place successfull added to that plan'});
     } catch (error) {
-      const errorMsg = error.toString();
-      const message = errorHandling(errorMsg);
-
-      if(message.includes('server error')){
-        res.status(500).json({ message: message });
-      }
-      else{
-        res.status(404).json({ message: message });
-      }
+      res.status(500).json({ error: 'An error occurred while adding the plan place.' });
     }
 });
 
-// Retrieve all plan places
 router.get('/', async (req, res) => {
     try {
         const planPlaces = await prisma.planPlace.findMany();
@@ -48,17 +61,45 @@ router.get('/', async (req, res) => {
         } 
     catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ error: 'An error occurred while getting all the plan places.' });
     }
 });
 
-// Edit Plan Places by ID
 router.put('/:id', async (req, res) => {
   const planPlaceId = req.params.id;
   const { plan_id, place_id, depart_time, transport_mode, transport_price} = req.body;
 
   try {
+      const isPlanPlaceIdValid = await prisma.planPlace.findUnique({
+        where: {id : planPlaceId},
+      });
+
+      if (!isPlanPlaceIdValid){
+        return res.status(404).json({message : 'Plan place id not found!'});
+      };
+
       const depart_time_ = new Date(depart_time)
+
+      if (isNaN(start_time_.getTime())){
+        return res.status(404).json({message : 'Please input a valid date time!'})
+      };
+
+      const isPlanIdValid = await prisma.plan.findUnique({
+          where: {id : plan_id},
+      });
+
+      if (!isPlanIdValid){
+        return res.status(404).json({message : 'Plan id not found!'});
+      };
+
+      const isPlaceIdValid = await prisma.place.findUnique({
+        where: {id : place_id},
+      });
+
+      if (!isPlaceIdValid){
+        return res.status(404).json({message : 'Place id not found!'});
+      };
+
       const planPlaces = await prisma.planPlace.update({
           data: {
               plan_id,
@@ -75,80 +116,58 @@ router.put('/:id', async (req, res) => {
       res.json({message : 'Plan place successfully updated'});
   } 
   catch (error) {
-    const errorMsg = error.toString();
-    const message = errorHandling(errorMsg);
-
-    console.error(error);
-
-    if(message.includes('server error')){
-      res.status(500).json({ message: message });
-    }
-    else{
-      res.status(404).json({ message: message });
-    } 
+    res.status(500).json({ error: 'An error occurred while updating the plan place.' });
   }
 });
 
-// Retrieve a specific place by ID
 router.get('/:id', async (req, res) => {
     const planPlaceId = req.params.id;
+    
     try {
-        const planPlace = await prisma.planPlace.findUnique({
-            where: {
-                id: planPlaceId
-            }
-        })
+      const isPlanPlaceIdValid = await prisma.planPlace.findUnique({
+        where: {id : planPlaceId},
+      });
+
+      if (!isPlanPlaceIdValid){
+        return res.status(404).json({message : 'Plan place id not found!'});
+      };
+
+      const planPlace = await prisma.planPlace.findUnique({
+          where: {
+              id: planPlaceId
+          }
+      });
         
-        if(places === null) 
-            res.status(404).json({ message: 'Plan place not found with that ID' });
-        
-        else res.json(places);
+      res.json(planPlace);
     } 
     catch (error) {
-        console.log(error)
-        res.status(500).json({ message: 'Internal server error' });
+      res.status(500).json({ error: 'An error occurred while getting all plan places.' });
     }
 });
 
-// Delete a plan place by ID
 router.delete('/:id', async (req, res) => {
-  const planplaceId = req.params.id;
-    try {
-        const planPlace = await prisma.planPlace.delete({
-            where: {
-                id: planplaceId
-            }
-        })
-        
-        res.json({message : 'Place successfully deleted'});
-    } 
-    catch (error) {
-        if (error['meta']['cause'].includes('not exist')){
-            res.status(404).json({ message: 'Plan Place to delete does not exist.' });
+  const planPlaceId = req.params.id;
+  
+  try {
+    const isPlanPlaceIdValid = await prisma.planPlace.findUnique({
+      where: {id : planPlaceId},
+    });
+
+    if (!isPlanPlaceIdValid){
+      return res.status(404).json({message : 'Plan place id not found!'});
+    };
+
+    const planPlace = await prisma.planPlace.delete({
+        where: {
+            id: planPlaceId
         }
-        else{
-            res.status(500).json({ message: 'Internal server error' });
-        }
-    }
+    });
+    
+    res.json({message : 'Plan place successfully deleted'});
+  } 
+  catch (error) {
+    res.status(500).json({ error: 'An error occurred while deleting the plan places.' });
+  }
 });
-
-const errorHandling = function (errorMsg){
-    if (errorMsg.includes('Argument depart_time: Got invalid value') || errorMsg.includes('Invalid time value')){
-      return 'Please input a valid depart_time!';
-    }
-    else if (errorMsg.includes('Foreign key constraint failed on the field: `plan_id`')){
-      return 'Error, plan_id not found!';
-    }
-    else if (errorMsg.includes('Record to update not found')){
-      return 'Error, plan place with that id not found!';
-    }
-    else if (errorMsg.includes('Foreign key constraint failed on the field: `place_id`')){
-      return 'Error, place_id not found!';
-    }
-    else{
-      return 'Internal server error!';
-    }
-
-}
 
 module.exports = router;

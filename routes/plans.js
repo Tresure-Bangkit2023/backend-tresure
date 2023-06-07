@@ -7,50 +7,70 @@ const prisma = new PrismaClient();
 const router = express.Router();
 router.use(express.json());
 
-// Create a new plan
 router.post('/', async (req, res) => {
     const { user_id, title, num_of_people, city, start_location, start_time } = req.body;
     const id = uuidv4();
-    const start_time_ = new Date(start_time) 
+     
     try {
-      const plan = await prisma.plan.create({
-        data: {
-          id,
-          user_id,
-          title,
-          num_of_people,
-          city,
-          start_location,
-          start_time : start_time_,
-        },
-      });
+        const start_time_ = new Date(start_time)
+
+        if (isNaN(start_time_.getTime())){
+            return res.status(404).json({message : 'Please input a valid date time!'})
+        };
+
+        const isUserIdValid = await prisma.user.findUnique({
+            where: {id : user_id},
+        });
+
+        if (!isUserIdValid){
+            return res.status(404).json({message : 'User id not found!'});
+        };
+
+        const plan = await prisma.plan.create({
+            data: {
+                id,
+                user_id,
+                title,
+                num_of_people,
+                city,
+                start_location,
+                start_time : start_time_,
+            },
+        });
   
-      res.json({ message: 'Plan created successfully', planId: plan.id });
+        res.json({ message: 'Plan created successfully'});
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ error: 'An error occurred while adding the plan.' });
     }
 });
 
-// Retrieve all plans
 router.get('/', async (req, res) => {
     try {
         const plans = await prisma.plan.findMany();
 
-        if(Object.keys(plans).length > 0)
+        if(Object.keys(plans).length > 0){
             res.json(plans);
-        else res.json({message : 'No plans yet!'})
-        } 
+        }
+        else {
+            res.json({message : 'No plan yet!'})
+        }
+    } 
     catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ error : 'An error occurred while getting all of plans.' });
     }
 });
 
-// // Retrieve a specific plan by ID
 router.get('/:id', async (req, res) => {
     const planId = req.params.id;
     try {
+        const isPlanIdValid = await prisma.plan.findUnique({
+            where : { id : planId }
+        });
+
+        if (!isPlanIdValid){
+            return res.status(404).json({message : 'Plan id not found!'});
+        }
+
         const plans = await prisma.plan.findUnique({
             where: {
                 id: planId
@@ -59,31 +79,41 @@ router.get('/:id', async (req, res) => {
                 PlanPlace: true
             }
         })
-        
-        if(plans === null) 
-            res.status(404).json({ message: 'Plan not found with that ID' });
-        
-        if (plans.PlanPlace.length === 0) {
-            plans.PlanPlace = 'No place added yet in this plan!';
-            res.json(plans);
-        }
             
-        else res.json(plans);
+        res.json(plans);
     } 
     catch (error) {
-        console.log(error)
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ error : 'An error occurred while getting the plan.' });
     }
 });
 
-// // Update a place by ID
 router.put('/:id', async (req, res) => {
     const planId = req.params.id;
     const { user_id, title, num_of_people, city, start_location, start_time } = req.body;
     
-    const start_time_ = new Date(start_time) 
-
     try {
+        const start_time_ = new Date(start_time);
+
+        if (isNaN(start_time_.getTime())){
+            return res.status(404).json({message : 'Please input a valid date time!'});
+        }
+
+        const isUserIdValid = await prisma.user.findUnique({
+            where: {id : user_id},
+        });
+
+        if (!isUserIdValid){
+            return res.status(404).json({message : 'User id not found!'});
+        }
+
+        const isPlanIdValid = await prisma.plan.findUnique({
+            where: {id : planId},
+        });
+
+        if (!isPlanIdValid){
+            return res.status(404).json({message : 'Plan id not found!'});
+        }
+
         const places = await prisma.place.update({
             data: {
                 user_id,
@@ -101,34 +131,42 @@ router.put('/:id', async (req, res) => {
         res.json({message : 'Plan successfully updated'});
     } 
     catch (error) {
-        if (error['meta']['cause'].includes('not found')){
-            res.status(404).json({ message: 'Plan not found with that ID' });
-        }
-        else{
-            res.status(500).json({ message: 'Internal server error' });
-        }
+        res.status(500).json({ error : 'An error occurred while updating the plan.' });
     }
 });
 
-// Delete a place by ID
 router.delete('/:id', async (req, res) => {
   const planId = req.params.id;
     try {
-        const plans = await prisma.plan.delete({
+        const isPlanIdValid = await prisma.plan.findUnique({
+            where: {id : planId},
+        });
+
+        if (!isPlanIdValid){
+            return res.status(404).json({message : 'Plan id not found!'});
+        }
+
+        const relatedRecords = await prisma.planPlace.findMany({
+            where: { plan_id : planId },
+        });
+
+        if (relatedRecords.length > 0) {
+            return res.json({error : 'Please delete all of related Plan Place before deleting the plan.'})
+        };
+
+        const plan = await prisma.plan.delete({
             where: {
                 id: planId
+            },
+            include: {
+                PlanPlace : true
             }
         })
         
         res.json({message : 'Plan successfully deleted'});
     } 
     catch (error) {
-        if (error['meta']['cause'].includes('not exist')){
-            res.status(404).json({ message: 'Plan to delete does not exist.' });
-        }
-        else{
-            res.status(500).json({ message: 'Internal server error' });
-        }
+        res.status(500).json({ error : 'An error occurred while deleting the plan.' });
     }
 });
 

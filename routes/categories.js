@@ -7,107 +7,137 @@ const prisma = new PrismaClient();
 const router = express.Router();
 router.use(express.json());
 
-// Add a new category
 router.post('/', async (req, res) => {
     const { name } = req.body;
     const id = uuidv4();
+    
     try {
-      const category = await prisma.category.create({
-        data: {
-          id,
-          name
-        },
-      });
+        const existingCategory = await prisma.category.findUnique({
+            where: { name },
+        });
+      
+        if (existingCategory) {
+            return res.status(409).json({ message: 'Category already exists.' });
+        };
+
+        const category = await prisma.category.create({
+            data: {
+                id,
+                name
+            },
+        });
   
-      res.json({ message: 'Category created successfully', categoryId: category.id });
+        res.json({ message: 'Category created successfully'});
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ error: 'An error occurred while adding the category.' });
     }
 });
 
-// Get all of categories
 router.get('/', async (req, res) => {
     try {
         const categories = await prisma.category.findMany();
 
-        if(Object.keys(categories).length > 0)
-            res.json(categories);
-        else res.json({message : 'No categories yet!'})
-        } 
+        if(Object.keys(categories).length > 0){
+            return res.json(categories);
+        }
+            
+        res.json({message : 'No categories yet!'})
+    } 
     catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ error: 'An error occurred while getting all categories.' });
     }
 });
 
-// Retrieve a specific category by ID
 router.get('/:id', async (req, res) => {
   const categoryId = req.params.id;
   try {
-      const category = await prisma.category.findUnique({
-          where: {
-              id: categoryId
-          }
-      })
-      
-      if(places === null) 
-          res.status(404).json({ message: 'Category not found with that ID' });
-      
-      else res.json(category);
+    const isCategoryIdValid = await prisma.category.findUnique({
+        where: {id : categoryId}
+    });
+
+    if (!isCategoryIdValid){
+        return res.status(404).json({ message: 'Category id not found.' });
+    };
+
+    const category = await prisma.category.findUnique({
+        where: {
+            id: categoryId
+        }
+    });
+    
+    res.json(category);
   } 
   catch (error) {
-      console.log(error)
-      res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ error: 'An error occurred while getting the category.' });
   }
 });
 
-// Update a category by ID
 router.put('/:id', async (req, res) => {
   const categoryId = req.params.id;
   const { name } = req.body;
 
   try {
-      const category = await prisma.category.update({
-          data: {
-              name
-          },
-          where: {
-              id: categoryId
-          }
-      })
+    const isCategoryIdValid = await prisma.category.findUnique({
+        where: {id : categoryId}
+    });
 
-      res.json({message : 'Category successfully updated'});
+    if (!isCategoryIdValid){
+        return res.status(404).json({ message: 'Category id not found.' });
+    };
+
+    const existingCategory = await prisma.category.findUnique({
+        where: { name },
+    });
+  
+    if (existingCategory) {
+        return res.status(409).json({ message: 'Category already exists.' });
+    };
+
+    const category = await prisma.category.update({
+        data: {
+            name
+        },
+        where: {
+            id: categoryId
+        }
+    });
+
+    res.json({message : 'Category successfully updated'});
   } 
   catch (error) {
-      if (error['meta']['cause'].includes('not found')){
-          res.status(404).json({ message: 'Category not found with that ID' });
-      }
-      else{
-          res.status(500).json({ message: 'Internal server error' });
-      }
+    res.status(500).json({ error: 'An error occurred while updating the category.' });
   }
 });
 
-// Delete a category by ID
 router.delete('/:id', async (req, res) => {
 const categoryId = req.params.id;
   try {
-      const category = await prisma.category.delete({
-          where: {
-              id: categoryId
-          }
-      })
+    const isCategoryIdValid = await prisma.category.findUnique({
+        where: {id : categoryId}
+    });
+
+    if (!isCategoryIdValid){
+        return res.status(404).json({ message: 'Category id not found.' });
+    };
+
+    const relatedRecords = await prisma.place.findMany({
+        where: { category_id : categoryId },
+    });
+
+    if (relatedRecords.length > 0) {
+        return res.json({error : 'Category already used by place'});
+    }
+
+    const category = await prisma.category.delete({
+        where: {
+            id: categoryId
+        }
+    });
       
-      res.json({message : 'Category successfully deleted'});
+    res.json({message : 'Category successfully deleted'});
   } 
   catch (error) {
-      if (error['meta']['cause'].includes('not exist')){
-          res.status(404).json({ message: 'Category to delete does not exist.' });
-      }
-      else{
-          res.status(500).json({ message: 'Internal server error' });
-      }
+    res.status(500).json({ error: 'An error occurred while deleting the category.' });
   }
 });
 

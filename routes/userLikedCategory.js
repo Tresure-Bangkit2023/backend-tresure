@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const userLikedCategories = await prisma.userLikedCategorie.findMany();
+        const userLikedCategories = await prisma.userLikedCategories.findMany();
 
         if(Object.keys(userLikedCategories).length > 0)
             res.json(userLikedCategories);

@@ -7,6 +7,7 @@ const planRouter = require('./routes/plans');
 const planPlaceRouter = require('./routes/plan_places');
 const verifyToken = require('./middleware/auth');
 const userLikedRouter = require('./routes/userLikedCategory');
+const ratingRouter = require('./routes/ratings');
 
 const app = express();
 const port = 3000;
@@ -21,6 +22,7 @@ app.use('/users', userRouter);
 app.use('/plans', planRouter);
 app.use('/planplace', planPlaceRouter);
 app.use('/userLikedCategory', userLikedRouter);
+app.use('/ratings', ratingRouter);
 
 
 // Start the server

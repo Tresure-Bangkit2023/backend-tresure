@@ -9,15 +9,17 @@ router.use(express.json());
 
 router.post('/', async (req, res) => {
     const { id, name } = req.body;
-    
+
     try {
-        const existingId = await prisma.category.findUnique({
-            where: { id },
-        });
-      
-        if (existingId) {
-            return res.status(409).json({ message: 'Id already exists.' });
-        };
+        if(id){
+            const existingId = await prisma.category.findUnique({
+                where: { id: parseInt(id) },
+            });
+          
+            if (existingId) {
+                return res.status(409).json({ message: 'Id already exists.' });
+            };
+        }
 
         const existingCategory = await prisma.category.findUnique({
             where: { name },
@@ -29,20 +31,23 @@ router.post('/', async (req, res) => {
         
         const category = await prisma.category.create({
             data: {
-                id: id || undefined,
+                id: parseInt(id) || undefined,
                 name
             },
         });
   
         res.json({ message: 'Category created successfully'});
     } catch (error) {
+        console.error(error)
         res.status(500).json({ error: 'An error occurred while adding the category.' });
     }
 });
 
 router.get('/', async (req, res) => {
     try {
-        const categories = await prisma.category.findMany();
+        const categories = await prisma.category.findMany({
+            orderBy: {id: 'asc'}
+        });
 
         if(Object.keys(categories).length > 0){
             return res.json(categories);
@@ -117,7 +122,7 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-const categoryId = req.params.id;
+const categoryId = parseInt(req.params.id);
   try {
     const isCategoryIdValid = await prisma.category.findUnique({
         where: {id : categoryId}

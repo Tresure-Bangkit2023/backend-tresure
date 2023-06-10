@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,54 +8,54 @@ datasource db {
 }
 
 model Category {
-  id          Int  @id @default(autoincrement())
-  name        String  @unique
-  Place       Place[]
-  liked_user  UserLikedCategories[]  
+  id         Int                   @id @default(autoincrement())
+  name       String                @unique
+  Place      Place[]
+  liked_user UserLikedCategories[]
 }
 
 model User {
-  id              String @id
-  username        String @unique
-  password        String 
-  email           String @unique
-  full_name       String
-  location        String
-  profile_pic     String?
-  solo_traveler   Boolean?
+  id               String                @id
+  username         String                @unique
+  password         String
+  email            String                @unique
+  full_name        String
+  location         String
+  profile_pic      String?
+  solo_traveler    Boolean?
+  plan             Plan[]
+  ratings          Rating[]              @relation("UserRatings")
   liked_categories UserLikedCategories[]
-
-  plan            Plan[]
-  ratings         Rating[]  @relation("UserRatings")
 }
 
 model UserLikedCategories {
-  id          String  @id
-  user_id     String 
+  id          String   @id
+  user_id     String
   category_id Int
-
-  user      User      @relation(fields: [user_id], references: [id])
-  category  Category  @relation(fields: [category_id], references: [id])
+  category    Category @relation(fields: [category_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
 
   @@unique([user_id, category_id])
+  @@index([category_id], map: "UserLikedCategories_category_id_fkey")
 }
 
 model Plan {
   id             String      @id
-  user           User        @relation(fields: [user_id], references: [id])
-  places         Place[]     @relation("PlanPlace")
   user_id        String
   title          String
   num_of_people  Int
   city           String
   start_location String
   start_time     DateTime
+  user           User        @relation(fields: [user_id], references: [id])
   PlanPlace      PlanPlace[]
+  places         Place[]     @relation("PlanPlace")
+
+  @@index([user_id], map: "Plan_user_id_fkey")
 }
 
 model Place {
   id          Int         @id @default(autoincrement())
-  category    Category    @relation(fields: [category_id], references: [id])
   category_id Int
   name        String
   description String?
@@ -68,9 +65,12 @@ model Place {
   lng         Float
   rating      Float
   image       String
-  plans       Plan[]      @relation("PlanPlace")
+  category    Category    @relation(fields: [category_id], references: [id])
   PlanPlace   PlanPlace[]
-  ratings     Rating[]  @relation("PlaceRatings")
+  ratings     Rating[]    @relation("PlaceRatings")
+  plans       Plan[]      @relation("PlanPlace")
+
+  @@index([category_id], map: "Place_category_id_fkey")
 }
 
 model PlanPlace {
@@ -80,22 +80,21 @@ model PlanPlace {
   depart_time     DateTime
   transport_mode  String?
   transport_price String?
-
-  plan  Plan  @relation(fields: [plan_id], references: [id])
-  place Place @relation(fields: [place_id], references: [id])
+  place           Place    @relation(fields: [place_id], references: [id])
+  plan            Plan     @relation(fields: [plan_id], references: [id])
 
   @@unique([plan_id, place_id])
+  @@index([place_id], map: "PlanPlace_place_id_fkey")
 }
 
-model Rating{
-  id         String    @id 
-  rating     Float
-  
-  userId     String
-  placeId    Int
-
-  user       User   @relation("UserRatings", fields: [userId], references: [id])
-  place      Place  @relation("PlaceRatings", fields: [placeId], references: [id])
+model Rating {
+  id      String @id
+  rating  Float
+  userId  String
+  placeId Int
+  place   Place  @relation("PlaceRatings", fields: [placeId], references: [id])
+  user    User   @relation("UserRatings", fields: [userId], references: [id])
 
   @@unique([userId, placeId])
+  @@index([placeId], map: "Rating_placeId_fkey")
 }

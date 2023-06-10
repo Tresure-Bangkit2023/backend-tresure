@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
 
 // // Retrieve a specific place by ID
 router.get('/:id', async (req, res) => {
-    const placeId = req.params.id;
+    const placeId = parseInt(req.params.id);
     try {
         const places = await prisma.place.findUnique({
             where: {

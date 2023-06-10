@@ -12,9 +12,9 @@ COPY prisma ./prisma/
 RUN npm install
 ENV DATABASE_URL="mysql://root:tresure123@34.101.50.185/tresure?unix_socket=/cloudsql/treasure-c23ps199:asia-southeast2:tresure-23"
 ENV NODE_ENV production
-# ENV HOST 0.0.0.0
-# ENV PORT 8080  
-# EXPOSE 8080
+ENV HOST 0.0.0.0
+ENV PORT 8080  
+EXPOSE 8080
 
 # Salin kode program aplikasi Anda ke dalam container
 COPY . .

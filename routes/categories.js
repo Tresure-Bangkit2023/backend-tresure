@@ -36,6 +36,7 @@ router.post('/', async (req, res) => {
   
         res.json({ message: 'Category created successfully'});
     } catch (error) {
+        res.json(error)
         res.status(500).json({ error: 'An error occurred while adding the category.' });
     }
 });

@@ -8,10 +8,17 @@ const router = express.Router();
 router.use(express.json());
 
 router.post('/', async (req, res) => {
-    const { name } = req.body;
-    const id = uuidv4();
+    const { id, name } = req.body;
     
     try {
+        const existingId = await prisma.category.findUnique({
+            where: { id },
+        });
+      
+        if (existingId) {
+            return res.status(409).json({ message: 'Id already exists.' });
+        };
+
         const existingCategory = await prisma.category.findUnique({
             where: { name },
         });
@@ -19,10 +26,10 @@ router.post('/', async (req, res) => {
         if (existingCategory) {
             return res.status(409).json({ message: 'Category already exists.' });
         };
-
+        
         const category = await prisma.category.create({
             data: {
-                id,
+                id: id || undefined,
                 name
             },
         });

@@ -38,8 +38,5 @@ steps:
       - 'us-central1'
       - '--platform'
       - 'managed'
-      - '--service-account'
-      - 'tresure-backend@treasure-c23ps199.iam.gserviceaccount.com'
-      - '--allow-unauthenticated'
 images:
   - 'gcr.io/$PROJECT_ID/tresure-app:$COMMIT_SHA'

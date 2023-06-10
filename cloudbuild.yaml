@@ -39,7 +39,7 @@ steps:
       - '--platform'
       - 'managed'
       - '--service-account'
-      - 'tresure-cloudrun@treasure-c23ps199.iam.gserviceaccount.com'
+      - 'tresure-backend@treasure-c23ps199.iam.gserviceaccount.com'
       - '--allow-unauthenticated'
 images:
   - 'gcr.io/$PROJECT_ID/tresure-app:$COMMIT_SHA'

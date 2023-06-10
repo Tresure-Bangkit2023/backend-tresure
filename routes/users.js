@@ -7,6 +7,8 @@ const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+const verifyToken = require('./middleware/auth');
+
 const router = express.Router();
 router.use(express.json());
 
@@ -79,7 +81,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
   const { username, password, email, full_name, location, profile_pic, solo_traveler } = req.body;
   const id = req.params.id;
 
@@ -129,7 +131,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   const userId = req.params.id;
     try {
         const isuserIdValid = await prisma.user.findUnique({
@@ -153,18 +155,19 @@ router.delete('/:id', async (req, res) => {
                 id: userId
             },
             include: {
-                userLikedCategories : true
+                liked_categories : true
             }
         })
         
         res.json({message : 'User successfully deleted'});
     } 
     catch (error) {
+      console.error(error)
         res.status(500).json({ error : 'An error occurred while deleting the user.' });
     }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
       const users = await prisma.user.findMany();
 
@@ -181,7 +184,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyToken, async (req, res) => {
   const userId = req.params.id;
   try {
       const isuserIdValid = await prisma.user.findUnique({
@@ -211,7 +214,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.get('/:id/plan', async (req, res) => {
+router.get('/:id/plan', verifyToken, async (req, res) => {
   const userId = req.params.id
   
   try {

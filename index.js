@@ -10,19 +10,19 @@ const userLikedRouter = require('./routes/userLikedCategory');
 const ratingRouter = require('./routes/ratings');
 
 const app = express();
-const port = 3000;
+const port = 8080;
 
 // Parse JSON request bodies
 app.use(express.json());
 
 // Use the places router for /places routes
 app.use('/places', verifyToken, placesRouter);
-app.use('/categories', categoryRouter);
+app.use('/categories', verifyToken, categoryRouter);
 app.use('/users', userRouter);
-app.use('/plans', planRouter);
-app.use('/planplace', planPlaceRouter);
-app.use('/userLikedCategory', userLikedRouter);
-app.use('/ratings', ratingRouter);
+app.use('/plans', verifyToken, planRouter);
+app.use('/planplace', verifyToken, planPlaceRouter);
+app.use('/userLikedCategory', verifyToken, userLikedRouter);
+app.use('/ratings', verifyToken, ratingRouter);
 
 
 // Start the server

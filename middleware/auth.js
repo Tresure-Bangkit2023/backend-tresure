@@ -12,7 +12,7 @@ const verifyToken = (req, res, next) => {
                 return res.status(403).json({ message: 'Access denied.' });
               }
             
-            jwt.verify(token, process.env.JWT_SECRET, (error, decoded) => {
+            jwt.verify(token, `${process.env.JWT_SECRET_KEY}`, (error, decoded) => {
                 if (error) {
                     console.error(error);
                     return res.status(403).json({ message: 'Failed to authenticate token.' });

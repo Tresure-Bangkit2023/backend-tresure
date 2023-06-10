@@ -10,7 +10,7 @@ const userLikedRouter = require('./routes/userLikedCategory');
 const ratingRouter = require('./routes/ratings');
 
 const app = express();
-const port = 3000;
+const port = 8080;
 
 // Parse JSON request bodies
 app.use(express.json());
@@ -27,6 +27,5 @@ app.use('/ratings', ratingRouter);
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+    console.log(`Server is listening on port ${port}`);
 });
-

@@ -10,7 +10,7 @@ COPY prisma ./prisma/
 
 # Install dependencies
 RUN npm install
-ENV DATABASE_URL=`${{ secrets.DATABASE_URL }}`
+ENV DATABASE_URL="mysql://root:tresure123@34.101.50.185/tresure?unix_socket=/cloudsql/treasure-c23ps199:asia-southeast2:tresure-23"
 ENV JWT_SECRET_KEY="abfca44793dd393c30608145eba6bcaf"
 ENV NODE_ENV production
 ENV HOST 0.0.0.0

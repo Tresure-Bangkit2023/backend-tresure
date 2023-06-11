@@ -49,8 +49,9 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/', async (req, res) => {
+router.get('/search', async (req, res) => {
     const category = req.query.category;
+    console.log(category);
 
     try {
         const places = await prisma.place.findMany({

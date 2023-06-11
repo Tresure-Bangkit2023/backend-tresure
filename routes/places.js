@@ -49,6 +49,31 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/', async (req, res) => {
+    const category = req.query.category;
+
+    try {
+        const places = await prisma.place.findMany({
+            where: {
+                category: {
+                  name: category
+                }
+              },
+              include: {
+                category: true
+            }
+        });
+
+        if(Object.keys(places).length > 0)
+            res.json(places);
+        else res.json({message : 'No places yet!'})
+        } 
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 // // Retrieve a specific place by ID
 router.get('/:id', async (req, res) => {
     const placeId = parseInt(req.params.id);

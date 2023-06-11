@@ -15,6 +15,8 @@ const port = process.env.PORT || 8080;
 // Parse JSON request bodies
 app.use(express.json());
 
+app.use(express.urlencoded({extended: true}))
+
 // Use the places router for /places routes
 app.use('/places', verifyToken, placesRouter);
 app.use('/categories', verifyToken, categoryRouter);

@@ -20,7 +20,7 @@ model User {
   password         String
   email            String                @unique
   full_name        String
-  location         String
+  location         String?
   profile_pic      String?
   solo_traveler    Boolean?
   plan             Plan[]

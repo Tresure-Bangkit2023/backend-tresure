@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
         password: hashedPassword,
         email,
         full_name,
-        location,
+        location: location || undefined,
         profile_pic,
         solo_traveler
       },

@@ -1,6 +1,10 @@
 # Gunakan base image yang sesuai dengan aplikasi Anda
 FROM node:18.14.2 as dependencies
 
+# Mengambil nilai dari env variable pada saat build
+ARG DATABASE_URL
+ARG JWT_SECRET_KEY
+
 # Set working directory di dalam container
 WORKDIR /app
 
@@ -10,8 +14,8 @@ COPY prisma ./prisma/
 
 # Install dependencies
 RUN npm install
-ENV DATABASE_URL="mysql://root:tresure123@34.101.50.185/tresure?unix_socket=/cloudsql/treasure-c23ps199:asia-southeast2:tresure-23"
-ENV JWT_SECRET_KEY="abfca44793dd393c30608145eba6bcaf"
+ENV DATABASE_URL $DATABASE_URL
+ENV JWT_SECRET_KEY $JWT_SECRET_KEY
 ENV NODE_ENV production
 ENV HOST 0.0.0.0
 ENV PORT 8080  

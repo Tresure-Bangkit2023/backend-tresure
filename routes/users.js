@@ -76,13 +76,17 @@ router.post('/login', async (req, res) => {
     });
 
     if (!user) {
-      return res.status(401).json({ message: 'Authentication failed. Invalid username or password.' });
+      return res.status(401).json({ 
+        error: true,
+        message: 'Authentication failed. Invalid username or password.' });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Authentication failed. Invalid username or password.' });
+      return res.status(401).json({ 
+        error: true,
+        message: 'Authentication failed. Invalid username or password.' });
     }
 
     const token = jwt.sign({ id: user.id, username: user.username }, `${process.env.JWT_SECRET_KEY}`, { expiresIn: '1d' });

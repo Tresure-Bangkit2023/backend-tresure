@@ -7,149 +7,150 @@ const prisma = new PrismaClient();
 const router = express.Router();
 router.use(express.json());
 
-router.post('/', async (req, res) => {
-    const { user_id, category_id} = req.body;
+// create user liked category function
+router.post('/', async(req, res) => {
+    const { user_id, category_id } = req.body;
     const id = uuidv4();
-    
+
     try {
-      const isCategoryIdValid = await prisma.category.findUnique({
-          where: {id : category_id},
-      });
+        const isCategoryIdValid = await prisma.category.findUnique({
+            where: { id: category_id },
+        });
 
-      if (!isCategoryIdValid){
-        return res.status(404).json({message : 'Category id not found!'});
-      };
+        if (!isCategoryIdValid) {
+            return res.status(404).json({ message: 'Category id not found!' });
+        };
 
-      const isUserIdValid = await prisma.user.findUnique({
-        where: {id : user_id},
-      });
+        const isUserIdValid = await prisma.user.findUnique({
+            where: { id: user_id },
+        });
 
-      if (!isUserIdValid){
-        return res.status(404).json({message : 'User id not found!'});
-      };
-      
-      const userLiked = await prisma.userLikedCategories.create({
-        data: {
-          id,
-          user_id,
-          category_id
-        },
-      });
-  
-      res.json({ message: 'Category successfull added to user liked'});
+        if (!isUserIdValid) {
+            return res.status(404).json({ message: 'User id not found!' });
+        };
+
+        const userLiked = await prisma.userLikedCategories.create({
+            data: {
+                id,
+                user_id,
+                category_id
+            },
+        });
+
+        res.json({ message: 'Category successfull added to user liked' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred while adding the liked category.' });
     }
 });
 
-router.get('/', async (req, res) => {
+// get all user liked category
+router.get('/', async(req, res) => {
     try {
         const userLikedCategories = await prisma.userLikedCategories.findMany();
 
-        if(Object.keys(userLikedCategories).length > 0)
+        if (Object.keys(userLikedCategories).length > 0)
             res.json(userLikedCategories);
-        else res.json({message : 'No liked category Yet!'})
-        } 
-    catch (error) {
+        else res.json({ message: 'No liked category Yet!' })
+    } catch (error) {
         res.status(500).json({ error: 'An error occurred while getting all the liked category.' });
     }
 });
 
-router.put('/:id', async (req, res) => {
-  const userLikedCategoriesId = req.params.id;
-  const { user_id, category_id } = req.body;
+// update user liked category
+router.put('/:id', async(req, res) => {
+    const userLikedCategoriesId = req.params.id;
+    const { user_id, category_id } = req.body;
 
-  try {
-      const isUserLikedCategoriesIdValid = await prisma.userLikedCategories.findUnique({
-        where: {id : userLikedCategoriesId},
-      });
-
-      if (!isUserLikedCategoriesIdValid){
-        return res.status(404).json({message : 'User liked id not found!'});
-      };
-
-        const isCategoryIdValid = await prisma.category.findUnique({
-            where: {id : category_id},
+    try {
+        const isUserLikedCategoriesIdValid = await prisma.userLikedCategories.findUnique({
+            where: { id: userLikedCategoriesId },
         });
 
-        if (!isCategoryIdValid){
-        return res.status(404).json({message : 'Category id not found!'});
+        if (!isUserLikedCategoriesIdValid) {
+            return res.status(404).json({ message: 'User liked id not found!' });
+        };
+
+        const isCategoryIdValid = await prisma.category.findUnique({
+            where: { id: category_id },
+        });
+
+        if (!isCategoryIdValid) {
+            return res.status(404).json({ message: 'Category id not found!' });
         };
 
         const isUserIdValid = await prisma.user.findUnique({
-        where: {id : user_id},
+            where: { id: user_id },
         });
 
-        if (!isUserIdValid){
-        return res.status(404).json({message : 'User id not found!'});
+        if (!isUserIdValid) {
+            return res.status(404).json({ message: 'User id not found!' });
         };
 
         const userLiked = await prisma.userLikedCategories.update({
-          data: {
-              user_id,
-              category_id,
-          },
-          where: {
-              id: userLikedCategoriesId
-          }
-      })
+            data: {
+                user_id,
+                category_id,
+            },
+            where: {
+                id: userLikedCategoriesId
+            }
+        })
 
-      res.json({message : 'Category liked successfully updated'});
-  } 
-  catch (error) {
-    res.status(500).json({ error: 'An error occurred while updating the liked category.' });
-  }
-});
-
-router.get('/:id', async (req, res) => {
-    const userLikedCategoriesId = req.params.id;
-    
-    try {
-      const isUserLikedCategoriesIdValid = await prisma.userLikedCategories.findUnique({
-        where: {id : userLikedCategoriesId},
-      });
-
-      if (!isUserLikedCategoriesIdValid){
-        return res.status(404).json({message : 'User liked id not found!'});
-      };
-
-      const userLikedCategories = await prisma.userLikedCategories.findUnique({
-          where: {
-              id: userLikedCategoriesId
-          }
-      });
-        
-      res.json(userLikedCategories);
-    } 
-    catch (error) {
-      res.status(500).json({ error: 'An error occurred while getting all user liked.' });
+        res.json({ message: 'Category liked successfully updated' });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while updating the liked category.' });
     }
 });
 
-router.delete('/:id', async (req, res) => {
-  const userLikedCategoriesId = req.params.id;
-  
-  try {
-    const isUserLikedCategoriesIdValid = await prisma.userLikedCategories.findUnique({
-        where: {id : userLikedCategoriesId},
-    });
+// get user liked category by id
+router.get('/:id', async(req, res) => {
+    const userLikedCategoriesId = req.params.id;
 
-    if (!isUserLikedCategoriesIdValid){
-    return res.status(404).json({message : 'User liked id not found!'});
-    };
+    try {
+        const isUserLikedCategoriesIdValid = await prisma.userLikedCategories.findUnique({
+            where: { id: userLikedCategoriesId },
+        });
 
-    const userLikedCategories = await prisma.userLikedCategories.delete({
-        where: {
-            id: userLikedCategoriesId
-        }
-    });
-    
-    res.json({message : 'User liked category successfully deleted'});
-  } 
-  catch (error) {
-    res.status(500).json({ error: 'An error occurred while deleting the liked category.' });
-  }
+        if (!isUserLikedCategoriesIdValid) {
+            return res.status(404).json({ message: 'User liked id not found!' });
+        };
+
+        const userLikedCategories = await prisma.userLikedCategories.findUnique({
+            where: {
+                id: userLikedCategoriesId
+            }
+        });
+
+        res.json(userLikedCategories);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while getting all user liked.' });
+    }
+});
+
+// delete user liked category
+router.delete('/:id', async(req, res) => {
+    const userLikedCategoriesId = req.params.id;
+
+    try {
+        const isUserLikedCategoriesIdValid = await prisma.userLikedCategories.findUnique({
+            where: { id: userLikedCategoriesId },
+        });
+
+        if (!isUserLikedCategoriesIdValid) {
+            return res.status(404).json({ message: 'User liked id not found!' });
+        };
+
+        const userLikedCategories = await prisma.userLikedCategories.delete({
+            where: {
+                id: userLikedCategoriesId
+            }
+        });
+
+        res.json({ message: 'User liked category successfully deleted' });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while deleting the liked category.' });
+    }
 });
 
 module.exports = router;

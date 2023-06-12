@@ -9,28 +9,46 @@ router.use(express.json());
 
 // Create a new place
 router.post('/', async (req, res) => {
-    const { category_id, name, description, city, price, lat, lng, rating, image } = req.body;
-    const id = uuidv4();
+    const { id, category_id, name, description, city, price, lat, lng, rating, image } = req.body;
+    
     try {
-      const place = await prisma.place.create({
-        data: {
-          id,
-          category_id,
-          name,
-          description,
-          city,
-          price,
-          lat,
-          lng,
-          rating,
-          image,
-        },
-      });
+
+        if(id){
+            const existingId = await prisma.place.findUnique({
+                where: { id: parseInt(id) },
+            });
+          
+            if (existingId) {
+                return res.status(409).json({ message: 'Id already exists.' });
+            };
+        }
+
+        const existingCategory = await prisma.category.findUnique({
+            where: { id: category_id },
+        });
+      
+        if (!existingCategory) {
+            return res.status(404).json({ message: 'Category id not found.' });
+        };
+        
+        const place = await prisma.place.create({
+            data: {
+                id: parseInt(id) || undefined,
+                category_id,
+                name,
+                description,
+                city,
+                price,
+                lat,
+                lng,
+                rating,
+                image,
+            },
+        });
   
-      res.json({ message: 'Place created successfully', placeId: place.id });
+      res.json({ message: 'Place created successfully' });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+      res.status(500).json({ message: 'An error occured when add the place.' });
     }
 });
 
@@ -44,8 +62,7 @@ router.get('/', async (req, res) => {
         else res.json({message : 'No places yet!'})
         } 
     catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'An error occured when getting all places.' });
     }
 });
 
@@ -70,39 +87,60 @@ router.get('/search', async (req, res) => {
         else res.json({message : 'No places yet!'})
         } 
     catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'An error occured when searching the place.' });
     }
 });
 
-// // Retrieve a specific place by ID
+// Retrieve a specific place by ID
 router.get('/:id', async (req, res) => {
     const placeId = parseInt(req.params.id);
     try {
+
+        const existingId = await prisma.place.findUnique({
+            where: { id: placeId },
+        });
+      
+        if (!existingId) {
+            return res.status(404).json({ message: 'Place id not found.' });
+        };
+
         const places = await prisma.place.findUnique({
             where: {
                 id: placeId
             }
         })
         
-        if(places === null) 
-            res.status(404).json({ message: 'Place not found with that ID' });
-        
-        else res.json(places);
+        res.json(places);
     } 
     catch (error) {
-        console.log(error)
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'An error occured when get the place.' });
     }
 });
 
 // Update a place by ID
 router.put('/:id', async (req, res) => {
-    const placeId = req.params.id;
-    const { category_id, name, description, city, price, lat, lng, rating, image } = req.body;
-
+    const {category_id, name, description, city, price, lat, lng, rating, image } = req.body;
+    const id = parseInt(req.params.id)
     try {
-        const places = await prisma.place.update({
+
+        const existingId = await prisma.place.findUnique({
+            where: { id },
+        });
+        
+        if (!existingId) {
+            return res.status(404).json({ message: 'Place id not found.' });
+        };
+        
+
+        const existingCategory = await prisma.category.findUnique({
+            where: { id: category_id },
+        });
+      
+        if (!existingCategory) {
+            return res.status(404).json({ message: 'Category id not found.' });
+        };
+        
+        const place = await prisma.place.update({
             data: {
                 category_id,
                 name,
@@ -112,22 +150,17 @@ router.put('/:id', async (req, res) => {
                 lat,
                 lng,
                 rating,
-                image
+                image,
             },
             where: {
-                id: placeId
+                id
             }
-        })
-
-        res.json({message : 'Place successfully updated'});
+        });
+  
+      res.json({ message: 'Place updated successfully' });
     } 
     catch (error) {
-        if (error['meta']['cause'].includes('not found')){
-            res.status(404).json({ message: 'Place not found with that ID' });
-        }
-        else{
-            res.status(500).json({ message: 'Internal server error' });
-        }
+        res.status(500).json({ message: 'An error occured when updating the place.' });
     }
 });
 
@@ -144,12 +177,7 @@ router.delete('/:id', async (req, res) => {
         res.json({message : 'Place successfully deleted'});
     } 
     catch (error) {
-        if (error['meta']['cause'].includes('not exist')){
-            res.status(404).json({ message: 'Place to delete does not exist.' });
-        }
-        else{
-            res.status(500).json({ message: 'Internal server error' });
-        }
+        res.status(500).json({ message: 'An error occured when deleting the place.' });
     }
 });
 

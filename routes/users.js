@@ -140,7 +140,7 @@ router.post("/logout", async(req, res) => {
 // update user function
 router.put('/:id', verifyToken, async(req, res) => {
     const { username, password, email, full_name, location, profile_pic, solo_traveler } = req.body;
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
 
     try {
         const existingUser = await prisma.user.findFirst({

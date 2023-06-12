@@ -118,7 +118,7 @@ router.post("/logout", async(req, res) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
         // Hapus token dari tabel Token di Prisma
         await prisma.token.deleteMany({
@@ -127,7 +127,7 @@ router.post("/logout", async(req, res) => {
             },
         });
 
-        const expiredToken = jwt.sign({}, process.env.JWT_SECRET, { expiresIn: 0 });
+        const expiredToken = jwt.sign({}, process.env.JWT_SECRET_KEY, { expiresIn: 0 });
 
         return res.json({ token: expiredToken, message: "Logout successful" });
     } catch (error) {
@@ -145,7 +145,7 @@ router.put('/:id', verifyToken, async(req, res) => {
             where: {
                 id: { not: id },
                 username
-            },
+            }
         });
 
         if (existingUser) {
@@ -159,7 +159,7 @@ router.put('/:id', verifyToken, async(req, res) => {
             where: {
                 id: { not: id },
                 email
-            },
+            }
         });
 
         if (existingEmail) {
@@ -181,7 +181,7 @@ router.put('/:id', verifyToken, async(req, res) => {
                 location,
                 profile_pic,
                 solo_traveler
-            },
+            }
         });
 
         res.status(200).json({
@@ -195,6 +195,7 @@ router.put('/:id', verifyToken, async(req, res) => {
         });
     }
 });
+
 
 // delete user function
 router.delete('/:id', verifyToken, async(req, res) => {

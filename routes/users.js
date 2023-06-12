@@ -140,7 +140,7 @@ router.post("/logout", async(req, res) => {
 // update user function
 router.put('/:id', verifyToken, async(req, res) => {
     const { username, password, email, full_name, location, profile_pic, solo_traveler } = req.body;
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
 
     try {
         const existingUser = await prisma.user.findFirst({
@@ -175,7 +175,6 @@ router.put('/:id', verifyToken, async(req, res) => {
 
     const updateUser = await prisma.user.update({
       data: {
-        id,
         username,
         password: hashedPassword,
         email,
@@ -184,6 +183,9 @@ router.put('/:id', verifyToken, async(req, res) => {
         profile_pic,
         solo_traveler
       },
+      where: {
+        id
+      }
     });
 
         res.status(200).json({

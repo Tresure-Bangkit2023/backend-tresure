@@ -14,7 +14,7 @@ router.post('/', async(req, res) => {
 
     try {
         const isPlaceIdValid = await prisma.place.findUnique({
-            where: { id: place_id },
+            where: { id: parseInt(place_id) },
         });
 
         if (!isPlaceIdValid) {
@@ -37,13 +37,20 @@ router.post('/', async(req, res) => {
             data: {
                 id,
                 userId: user_id,
-                placeId: place_id,
-                rating
+                placeId: parseInt(place_id),
+                rating: parseFloat(rating)
             },
         });
 
+        const place = await prisma.place.update({
+            data:{
+                
+            }
+        })
+
         res.json({ message: 'Rating successfully added' });
     } catch (error) {
+        console.error(error)
         res.status(500).json({ error: 'An error occurred while adding the rating.' });
     }
 });
@@ -68,7 +75,7 @@ router.put('/:id', async(req, res) => {
 
     try {
         const isPlaceIdValid = await prisma.place.findUnique({
-            where: { id: place_id },
+            where: { id: parseInt(place_id) },
         });
 
         if (!isPlaceIdValid) {
@@ -76,7 +83,7 @@ router.put('/:id', async(req, res) => {
         };
 
         const isUserIdValid = await prisma.user.findUnique({
-            where: { id: user_id },
+            where: { id: parseInt(user_id) },
         });
 
         if (!isUserIdValid) {
@@ -98,9 +105,9 @@ router.put('/:id', async(req, res) => {
         const ratings = await prisma.rating.update({
             data: {
                 id,
-                userId: user_id,
-                placeId: place_id,
-                rating
+                userId: parseInt(user_id),
+                placeId: parseInt(place_id),
+                rating: parseFloat(rating)
             },
             where: {
                 id: ratingId
@@ -129,6 +136,9 @@ router.get('/:id', async(req, res) => {
         const ratings = await prisma.rating.findUnique({
             where: {
                 id: ratingId
+            },
+            include: {
+                place: true
             }
         });
 

@@ -79,7 +79,7 @@ router.get('/search', async(req, res) => {
 
 // Retrieve a specific place by ID
 router.get('/:id', async(req, res) => {
-    const placeId = req.params.id;
+    const placeId = parseInt(req.params.id);
 
     try {
         const place = await prisma.place.findUnique({
@@ -101,7 +101,7 @@ router.get('/:id', async(req, res) => {
 
 // Update a place by ID
 router.put('/:id', async(req, res) => {
-    const placeId = req.params.id;
+    const placeId = parseInt(req.params.id);
     const { category_id, name, description, city, price, lat, lng, rating, image } = req.body;
 
     try {
@@ -131,7 +131,7 @@ router.put('/:id', async(req, res) => {
 
 // Delete a place by ID
 router.delete('/:id', async(req, res) => {
-    const placeId = req.params.id;
+    const placeId = parseInt(req.params.id);
 
     try {
         const place = await prisma.place.delete({

@@ -8,29 +8,28 @@ const router = express.Router();
 router.use(express.json());
 
 // Create a new place
-router.post('/', async (req, res) => {
+router.post('/', async(req, res) => {
     const { id, category_id, name, description, city, price, lat, lng, rating, image } = req.body;
-    
-    try {
 
-        if(id){
+    try {
+        if (id) {
             const existingId = await prisma.place.findUnique({
                 where: { id: parseInt(id) },
             });
-          
+
             if (existingId) {
                 return res.status(409).json({ message: 'Id already exists.' });
-            };
+            }
         }
 
         const existingCategory = await prisma.category.findUnique({
             where: { id: category_id },
         });
-      
+
         if (!existingCategory) {
             return res.status(404).json({ message: 'Category id not found.' });
-        };
-        
+        }
+
         const place = await prisma.place.create({
             data: {
                 id: parseInt(id) || undefined,
@@ -45,102 +44,111 @@ router.post('/', async (req, res) => {
                 image,
             },
         });
-  
-      res.json({ message: 'Place created successfully' });
+
+        res.json({ message: 'Place created successfully' });
     } catch (error) {
-      res.status(500).json({ message: 'An error occured when add the place.' });
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred when adding the place.' });
     }
 });
 
 // Retrieve all places
-router.get('/', async (req, res) => {
+router.get('/', async(req, res) => {
     try {
         const places = await prisma.place.findMany();
 
-        if(Object.keys(places).length > 0)
+        if (places.length > 0) {
             res.json(places);
-        else res.json({message : 'No places yet!'})
-        } 
-    catch (error) {
-        res.status(500).json({ message: 'An error occured when getting all places.' });
+        } else {
+            res.json({ message: 'No places yet!' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred when getting all places.' });
     }
 });
 
-router.get('/search', async (req, res) => {
+// Retrieve all places by category
+router.get('/search', async(req, res) => {
     const category = req.query.category;
-    console.log(category);
 
     try {
         const places = await prisma.place.findMany({
             where: {
                 category: {
-                  name: category
-                }
-              },
-              include: {
-                category: true
-            }
+                    name: category,
+                },
+            },
+            include: {
+                category: true,
+            },
         });
 
-        if(Object.keys(places).length > 0)
+        if (places.length > 0) {
             res.json(places);
-        else res.json({message : 'No places yet!'})
-        } 
-    catch (error) {
-        res.status(500).json({ message: 'An error occured when searching the place.' });
+        } else {
+            res.json({ message: 'No places found for the specified category.' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred when searching for places.' });
     }
 });
 
 // Retrieve a specific place by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', async(req, res) => {
     const placeId = parseInt(req.params.id);
+
     try {
-
-        const existingId = await prisma.place.findUnique({
-            where: { id: placeId },
-        });
-      
-        if (!existingId) {
-            return res.status(404).json({ message: 'Place id not found.' });
-        };
-
-        const places = await prisma.place.findUnique({
+        const place = await prisma.place.findUnique({
             where: {
-                id: placeId
-            }
-        })
-        
-        res.json(places);
-    } 
-    catch (error) {
-        res.status(500).json({ message: 'An error occured when get the place.' });
+                id: placeId,
+            },
+        });
+
+        if (!place) {
+            res.status(404).json({ message: 'Place not found with that ID' });
+        } else {
+            res.json(place);
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred when getting the place.' });
     }
 });
 
 // Update a place by ID
-router.put('/:id', async (req, res) => {
-    const {category_id, name, description, city, price, lat, lng, rating, image } = req.body;
-    const id = parseInt(req.params.id)
-    try {
+router.put('/:id', async(req, res) => {
+    const placeId = parseInt(req.params.id);
+    const { category_id, name, description, city, price, lat, lng, rating, image } = req.body;
 
-        const existingId = await prisma.place.findUnique({
-            where: { id },
+    try {
+        const existingPlace = await prisma.place.findUnique({
+            where: {
+                id: placeId,
+            },
         });
-        
-        if (!existingId) {
-            return res.status(404).json({ message: 'Place id not found.' });
-        };
-        
+
+        if (!existingPlace) {
+            res.status(404).json({ message: 'Place not found with that ID' });
+            return;
+        }
 
         const existingCategory = await prisma.category.findUnique({
-            where: { id: category_id },
+            where: {
+                id: category_id,
+            },
         });
-      
+
         if (!existingCategory) {
-            return res.status(404).json({ message: 'Category id not found.' });
-        };
-        
-        const place = await prisma.place.update({
+            res.status(404).json({ message: 'Category not found with that ID' });
+            return;
+        }
+
+        const updatedPlace = await prisma.place.update({
+            where: {
+                id: placeId,
+            },
             data: {
                 category_id,
                 name,
@@ -152,32 +160,41 @@ router.put('/:id', async (req, res) => {
                 rating,
                 image,
             },
-            where: {
-                id
-            }
         });
-  
-      res.json({ message: 'Place updated successfully' });
-    } 
-    catch (error) {
-        res.status(500).json({ message: 'An error occured when updating the place.' });
+
+        res.json({ message: 'Place updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred when updating the place.' });
     }
 });
 
 // Delete a place by ID
-router.delete('/:id', async (req, res) => {
-  const placeId = req.params.id;
+router.delete('/:id', async(req, res) => {
+    const placeId = parseInt(req.params.id);
+
     try {
-        const places = await prisma.place.delete({
+        const existingPlace = await prisma.place.findUnique({
             where: {
-                id: placeId
-            }
-        })
-        
-        res.json({message : 'Place successfully deleted'});
-    } 
-    catch (error) {
-        res.status(500).json({ message: 'An error occured when deleting the place.' });
+                id: placeId,
+            },
+        });
+
+        if (!existingPlace) {
+            res.status(404).json({ message: 'Place not found with that ID' });
+            return;
+        }
+
+        await prisma.place.delete({
+            where: {
+                id: placeId,
+            },
+        });
+
+        res.json({ message: 'Place deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred when deleting the place.' });
     }
 });
 

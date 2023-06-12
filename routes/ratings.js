@@ -33,6 +33,22 @@ router.post('/', async(req, res) => {
             return res.json({ message: 'Rating is start from 1.0 until 5.0!' });
         }
 
+        // Find if user has given a rating
+        const check = await prisma.rating.findFirst({
+            where: {
+                AND: [
+                  { userId: user_id },
+                  { placeId: parseInt(place_id) },
+                ],
+            },
+        });
+
+        if(check != null){
+            return res.status(409).json({
+                message: 'User has given a rating to this place! Please either edit or delete the rating.'
+            });
+        }
+
         const ratings = await prisma.rating.create({
             data: {
                 id,
@@ -42,11 +58,25 @@ router.post('/', async(req, res) => {
             },
         });
 
-        const place = await prisma.place.update({
-            data:{
-                
-            }
-        })
+        const ratingPlace = await prisma.rating.findMany({
+            where: {
+              placeId: parseInt(place_id)
+            },
+        });
+
+        const ratingValues = ratingPlace.map((rating) => rating.rating);
+        const totalRating = ratingValues.reduce((sum, rating) => sum + rating, 0);
+        const averageRating = totalRating / ratingValues.length;
+
+        const updateRating = await prisma.place.update({
+            where: {
+              id: parseInt(place_id),
+            },
+            data: {
+              rating: parseFloat(averageRating.toFixed(2)),
+            },
+        });
+          
 
         res.json({ message: 'Rating successfully added' });
     } catch (error) {

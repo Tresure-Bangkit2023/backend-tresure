@@ -28,7 +28,7 @@ router.post('/', async(req, res) => {
         }
 
         const isPlaceIdValid = await prisma.place.findUnique({
-            where: { id: place_id.toString() },
+            where: { id: place_id },
         });
 
         if (!isPlaceIdValid) {

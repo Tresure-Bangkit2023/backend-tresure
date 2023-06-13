@@ -82,10 +82,10 @@ router.put('/:id', async(req, res) => {
             return res.status(404).json({ message: 'Plan place id not found!' });
         };
 
-        const depart_time_ = new Date(depart_time)
+        const depart_time_ = new Date(depart_time);
 
-        if (isNaN(start_time_.getTime())) {
-            return res.status(404).json({ message: 'Please input a valid date time!' })
+        if (isNaN(depart_time_.getTime())) {
+            return res.status(400).json({ message: 'Please input a valid date time!' });
         };
 
         const isPlanIdValid = await prisma.plan.findUnique({
@@ -115,13 +115,15 @@ router.put('/:id', async(req, res) => {
             where: {
                 id: planPlaceId
             }
-        })
+        });
 
         res.json({ message: 'Plan place successfully updated' });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'An error occurred while updating the plan place.' });
     }
 });
+
 
 // Get a plan place by id
 router.get('/:id', async(req, res) => {

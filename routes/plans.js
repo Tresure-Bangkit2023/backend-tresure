@@ -115,7 +115,7 @@ router.put('/:id', async(req, res) => {
             return res.status(404).json({ message: 'Plan id not found!' });
         }
 
-        const places = await prisma.place.update({
+        const updatedPlan = await prisma.plan.update({
             data: {
                 user_id,
                 title,
@@ -127,13 +127,14 @@ router.put('/:id', async(req, res) => {
             where: {
                 id: planId
             }
-        })
+        });
 
         res.json({ message: 'Plan successfully updated' });
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while updating the plan.' });
     }
 });
+
 
 // Delete a plan by id
 router.delete('/:id', async(req, res) => {

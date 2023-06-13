@@ -13,11 +13,11 @@ router.post('/', async(req, res) => {
     const id = uuidv4();
 
     try {
-        const depart_time_ = new Date(depart_time)
+        const depart_time_ = new Date(depart_time);
 
-        if (isNaN(start_time_.getTime())) {
-            return res.status(404).json({ message: 'Please input a valid date time!' })
-        };
+        if (isNaN(depart_time_.getTime())) {
+            return res.status(400).json({ message: 'Please input a valid date time!' });
+        }
 
         const isPlanIdValid = await prisma.plan.findUnique({
             where: { id: plan_id },
@@ -25,33 +25,34 @@ router.post('/', async(req, res) => {
 
         if (!isPlanIdValid) {
             return res.status(404).json({ message: 'Plan id not found!' });
-        };
+        }
 
         const isPlaceIdValid = await prisma.place.findUnique({
-            where: { id: place_id },
+            where: { id: place_id.toString() },
         });
 
         if (!isPlaceIdValid) {
             return res.status(404).json({ message: 'Place id not found!' });
-        };
+        }
 
         const planPlace = await prisma.planPlace.create({
             data: {
                 id,
                 plan_id,
-                place_id,
+                place_id: place_id.toString(),
                 depart_time: depart_time_,
                 transport_mode,
                 transport_price,
             },
         });
 
-        res.json({ message: 'Place successfull added to that plan' });
+        res.json({ message: 'Place successfully added to the plan!' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'An error occurred while adding the plan place.' });
     }
 });
+
 
 // Get all plan places
 router.get('/', async(req, res) => {

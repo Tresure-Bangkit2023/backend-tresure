@@ -79,7 +79,7 @@ model PlanPlace {
   place_id        Int
   depart_time     DateTime
   transport_mode  String?
-  transport_price String?
+  transport_price Float
   place           Place    @relation(fields: [place_id], references: [id])
   plan            Plan     @relation(fields: [plan_id], references: [id])
 

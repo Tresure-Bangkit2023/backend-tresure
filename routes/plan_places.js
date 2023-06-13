@@ -39,7 +39,7 @@ router.post('/', async(req, res) => {
             data: {
                 id,
                 plan_id,
-                place_id: place_id.toString(),
+                place_id,
                 depart_time: depart_time_,
                 transport_mode,
                 transport_price,

@@ -113,7 +113,7 @@ router.put('/:id', async(req, res) => {
         };
 
         const isUserIdValid = await prisma.user.findUnique({
-            where: { id: parseInt(user_id) },
+            where: { id: user_id },
         });
 
         if (!isUserIdValid) {
@@ -124,24 +124,50 @@ router.put('/:id', async(req, res) => {
             return res.json({ message: 'Rating is start from 1.0 until 5.0!' });
         }
 
-        const isRatingIdValid = await prisma.rating.findUnique({
-            where: { id: ratingId },
+        // Find if user has given a rating
+        const check = await prisma.rating.findFirst({
+            where: {
+                AND: [
+                  { userId: user_id },
+                  { placeId: parseInt(place_id) },
+                ],
+            },
         });
 
-        if (!isRatingIdValid) {
-            return res.status(404).json({ message: 'Rating id not found!' });
-        };
+        if(check == null){
+            return res.status(409).json({
+                message: 'User hasn\'t given a rating to this place! Please add first.'
+            });
+        }
 
         const ratings = await prisma.rating.update({
             data: {
-                id,
-                userId: parseInt(user_id),
+                userId: user_id,
                 placeId: parseInt(place_id),
                 rating: parseFloat(rating)
             },
             where: {
                 id: ratingId
             }
+        });
+
+        const ratingPlace = await prisma.rating.findMany({
+            where: {
+              placeId: parseInt(place_id)
+            },
+        });
+
+        const ratingValues = ratingPlace.map((rating) => rating.rating);
+        const totalRating = ratingValues.reduce((sum, rating) => sum + rating, 0);
+        const averageRating = totalRating / ratingValues.length;
+
+        const updateRating = await prisma.place.update({
+            where: {
+              id: parseInt(place_id),
+            },
+            data: {
+              rating: parseFloat(averageRating.toFixed(2)),
+            },
         });
 
         res.json({ message: 'Rating successfully updated' });

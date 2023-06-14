@@ -9,10 +9,19 @@ router.use(express.json());
 
 // create user liked category function
 router.post('/', async(req, res) => {
-    const { user_id, category_id } = req.body;
+    const { category_id } = req.body;
     const id = uuidv4();
 
     try {
+        const user_id = parseInt(req.body.user_id);
+
+        if(!user_id){
+            return res.json({
+                error: true,
+                message: "Please input a valid user_id (Int)."
+            })
+        }
+
         const isCategoryIdValid = await prisma.category.findUnique({
             where: { id: category_id },
         });
@@ -49,8 +58,9 @@ router.get('/', async(req, res) => {
     try {
         const userLikedCategories = await prisma.userLikedCategories.findMany();
 
-        if (Object.keys(userLikedCategories).length > 0)
+        if (Object.keys(userLikedCategories).length > 0){
             res.json(userLikedCategories);
+        }
         else res.json({ message: 'No liked category Yet!' })
     } catch (error) {
         res.status(500).json({ error: 'An error occurred while getting all the liked category.' });
@@ -60,9 +70,18 @@ router.get('/', async(req, res) => {
 // update user liked category
 router.put('/:id', async(req, res) => {
     const userLikedCategoriesId = req.params.id;
-    const { user_id, category_id } = req.body;
+    const { category_id } = req.body;
 
     try {
+        const user_id = parseInt(req.body.user_id);
+
+        if(!user_id){
+            return res.json({
+                error: true,
+                message: "Please input a valid user_id (Int)."
+            })
+        }
+
         const isUserLikedCategoriesIdValid = await prisma.userLikedCategories.findUnique({
             where: { id: userLikedCategoriesId },
         });

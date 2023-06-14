@@ -15,7 +15,7 @@ model Category {
 }
 
 model User {
-  id               String                @id
+  id               Int                   @id @default(autoincrement())
   username         String                @unique
   password         String
   email            String                @unique
@@ -30,7 +30,7 @@ model User {
 
 model UserLikedCategories {
   id          String   @id
-  user_id     String
+  user_id     Int
   category_id Int
   category    Category @relation(fields: [category_id], references: [id])
   user        User     @relation(fields: [user_id], references: [id])
@@ -41,7 +41,7 @@ model UserLikedCategories {
 
 model Plan {
   id             String      @id
-  user_id        String
+  user_id        Int
   title          String
   num_of_people  Int
   city           String
@@ -90,11 +90,11 @@ model PlanPlace {
 model Rating {
   id      String @id
   rating  Float
-  userId  String
-  placeId Int
-  place   Place  @relation("PlaceRatings", fields: [placeId], references: [id])
-  user    User   @relation("UserRatings", fields: [userId], references: [id])
+  user_id  Int
+  place_id Int
+  place   Place  @relation("PlaceRatings", fields: [place_id], references: [id])
+  user    User   @relation("UserRatings", fields: [user_id], references: [id])
 
-  @@unique([userId, placeId])
-  @@index([placeId], map: "Rating_placeId_fkey")
+  @@unique([user_id, place_id])
+  @@index([place_id], map: "Rating_placeId_fkey")
 }

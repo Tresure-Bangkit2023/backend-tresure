@@ -17,7 +17,6 @@ router.use(express.json());
 // register user function
 router.post('/register', async(req, res) => {
     const { username, password, email, full_name, location, profile_pic, solo_traveler } = req.body;
-    const id = uuidv4();
 
     try {
         const existingUser = await prisma.user.findUnique({
@@ -46,7 +45,6 @@ router.post('/register', async(req, res) => {
 
         const newUser = await prisma.user.create({
             data: {
-                id,
                 username,
                 password: hashedPassword,
                 email,
@@ -140,7 +138,7 @@ router.post("/logout", async(req, res) => {
 // update user function
 router.put('/:id', verifyToken, async(req, res) => {
     const { username, password, email, full_name, location, profile_pic, solo_traveler } = req.body;
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
 
     try {
         const existingUser = await prisma.user.findFirst({
@@ -173,20 +171,20 @@ router.put('/:id', verifyToken, async(req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-    const updateUser = await prisma.user.update({
-      data: {
-        username,
-        password: hashedPassword,
-        email,
-        full_name,
-        location,
-        profile_pic,
-        solo_traveler
-      },
-      where: {
-        id
-      }
-    });
+        const updateUser = await prisma.user.update({
+        data: {
+            username,
+            password: hashedPassword,
+            email,
+            full_name,
+            location,
+            profile_pic,
+            solo_traveler
+        },
+        where: {
+            id
+        }
+        });
 
         res.status(200).json({
             error: false,
@@ -203,10 +201,10 @@ router.put('/:id', verifyToken, async(req, res) => {
 
 // delete user function
 router.delete('/:id', verifyToken, async(req, res) => {
-    const userId = req.params.id;
+    const user_id = parseInt(req.params.id);
     try {
         const isuserIdValid = await prisma.user.findUnique({
-            where: { id: userId },
+            where: { id: user_id },
         });
 
         if (!isuserIdValid) {
@@ -217,7 +215,7 @@ router.delete('/:id', verifyToken, async(req, res) => {
         }
 
         const relatedRecords = await prisma.userLikedCategories.findMany({
-            where: { user_id: userId },
+            where: { user_id: user_id },
         });
 
         if (relatedRecords.length > 0) {
@@ -229,7 +227,7 @@ router.delete('/:id', verifyToken, async(req, res) => {
 
         const user = await prisma.user.delete({
             where: {
-                id: userId
+                id: user_id
             },
             include: {
                 liked_categories: true
@@ -254,7 +252,10 @@ router.get('/', verifyToken, async(req, res) => {
         const users = await prisma.user.findMany();
 
         if (Object.keys(users).length > 0) {
-            res.json(users);
+            res.json({
+                error: false,
+                data: users
+            });
         } else {
             res.json({
                 error: false,
@@ -270,10 +271,10 @@ router.get('/', verifyToken, async(req, res) => {
 });
 
 router.get('/:id', verifyToken, async(req, res) => {
-    const userId = req.params.id;
+    const user_id = parseInt(req.params.id);
     try {
         const isuserIdValid = await prisma.user.findUnique({
-            where: { id: userId }
+            where: { id: user_id }
         });
 
         if (!isuserIdValid) {
@@ -285,21 +286,20 @@ router.get('/:id', verifyToken, async(req, res) => {
 
         const user = await prisma.user.findUnique({
             where: {
-                id: userId
+                id: user_id
             },
             include: {
                 liked_categories: {
-                    where: { user_id: userId }
+                    where: { user_id }
                 }
             }
         })
 
         res.json({
             error: false,
-            user
+            data: user
         });
     } catch (error) {
-        console.error(error);
         res.status(500).json({
             error: true,
             message: 'An error occurred while getting the user.'
@@ -308,11 +308,11 @@ router.get('/:id', verifyToken, async(req, res) => {
 });
 
 router.get('/:id/plan', verifyToken, async(req, res) => {
-    const userId = req.params.id
+    const user_id = parseInt(req.params.id);
 
     try {
         const isUserIdValid = await prisma.user.findUnique({
-            where: { id: userId }
+            where: { id: user_id }
         });
 
         if (!isUserIdValid) {
@@ -324,7 +324,7 @@ router.get('/:id/plan', verifyToken, async(req, res) => {
 
         const user = await prisma.user.findUnique({
             where: {
-                id: userId
+                id: user_id
             },
             include: {
                 plan: {
@@ -337,7 +337,7 @@ router.get('/:id/plan', verifyToken, async(req, res) => {
 
         res.json({
             error: false,
-            user
+            data: user
         });
     } catch (error) {
         console.error(error);

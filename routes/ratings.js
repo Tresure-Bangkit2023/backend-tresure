@@ -12,9 +12,12 @@ router.post('/', async(req, res) => {
     const { user_id, place_id, rating } = req.body;
     const id = uuidv4();
 
+    const user_id_ = parseInt(user_id)
+    const place_id_ = parseInt(place_id)
+
     try {
         const isPlaceIdValid = await prisma.place.findUnique({
-            where: { id: parseInt(place_id) },
+            where: { id: place_id_ },
         });
 
         if (!isPlaceIdValid) {
@@ -22,7 +25,7 @@ router.post('/', async(req, res) => {
         };
 
         const isUserIdValid = await prisma.user.findUnique({
-            where: { id: user_id },
+            where: { id: user_id_ },
         });
 
         if (!isUserIdValid) {
@@ -37,8 +40,8 @@ router.post('/', async(req, res) => {
         const check = await prisma.rating.findFirst({
             where: {
                 AND: [
-                  { userId: user_id },
-                  { placeId: parseInt(place_id) },
+                  { user_id: user_id_ },
+                  { place_id: place_id_ },
                 ],
             },
         });
@@ -52,15 +55,15 @@ router.post('/', async(req, res) => {
         const ratings = await prisma.rating.create({
             data: {
                 id,
-                userId: user_id,
-                placeId: parseInt(place_id),
+                user_id: user_id_,
+                place_id: place_id_,
                 rating: parseFloat(rating)
             },
         });
 
         const ratingPlace = await prisma.rating.findMany({
             where: {
-              placeId: parseInt(place_id)
+              place_id: place_id_
             },
         });
 
@@ -70,7 +73,7 @@ router.post('/', async(req, res) => {
 
         const updateRating = await prisma.place.update({
             where: {
-              id: parseInt(place_id),
+              id: place_id_,
             },
             data: {
               rating: parseFloat(averageRating.toFixed(2)),
@@ -80,7 +83,6 @@ router.post('/', async(req, res) => {
 
         res.json({ message: 'Rating successfully added' });
     } catch (error) {
-        console.error(error)
         res.status(500).json({ error: 'An error occurred while adding the rating.' });
     }
 });
@@ -90,11 +92,19 @@ router.get('/', async(req, res) => {
     try {
         const rating = await prisma.rating.findMany();
 
-        if (Object.keys(rating).length > 0)
-            res.json(rating);
+        if (Object.keys(rating).length > 0){
+            res.json({
+                error: false,
+                data: rating
+            });
+        }
+            
         else res.json({ message: 'No rating Yet!' })
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while getting all the rating from user.' });
+        res.status(500).json({ 
+            error: true,
+            message: 'An error occurred while getting all the rating from user.' 
+        });
     }
 });
 
@@ -217,14 +227,43 @@ router.delete('/:id', async(req, res) => {
             return res.status(404).json({ message: 'Rating id not found!' });
         };
 
+        const place = await prisma.rating.findFirst({
+            where: {
+                id: ratingId
+            },
+            select:{
+                placeId: true
+            }
+        });
+
         const ratings = await prisma.rating.delete({
             where: {
                 id: ratingId
             }
         });
 
+        const ratingPlace = await prisma.rating.findMany({
+            where: {
+              placeId: parseInt(place.placeId)
+            },
+        });
+
+        const ratingValues = ratingPlace.map((rating) => rating.rating);
+        const totalRating = ratingValues.reduce((sum, rating) => sum + rating, 0);
+        const averageRating = totalRating / ratingValues.length;
+
+        const updateRating = await prisma.place.update({
+            where: {
+              id: parseInt(place.placeId),
+            },
+            data: {
+              rating: parseFloat(averageRating.toFixed(2)),
+            },
+        });
+
         res.json({ message: 'Rating successfully deleted' });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'An error occurred while deleting the rating.' });
     }
 });

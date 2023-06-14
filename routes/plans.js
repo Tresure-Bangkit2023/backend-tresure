@@ -9,10 +9,19 @@ router.use(express.json());
 
 // Create a new plan
 router.post('/', async(req, res) => {
-    const { user_id, title, num_of_people, city, start_location, start_time } = req.body;
+    const { title, num_of_people, city, start_location, start_time } = req.body;
     const id = uuidv4();
 
     try {
+        const user_id = parseInt(req.body.user_id);
+
+        if(!user_id){
+            return res.json({
+                error: true,
+                message: "Please input a valid user_id (Int)."
+            })
+        }
+
         const start_time_ = new Date(start_time)
 
         if (isNaN(start_time_.getTime())) {
@@ -90,9 +99,18 @@ router.get('/:id', async(req, res) => {
 // Update a plan by id
 router.put('/:id', async(req, res) => {
     const planId = req.params.id;
-    const { user_id, title, num_of_people, city, start_location, start_time } = req.body;
+    const {title, num_of_people, city, start_location, start_time } = req.body;
 
     try {
+        const user_id = parseInt(req.body.user_id);
+
+        if(!user_id){
+            return res.json({
+                error: true,
+                message: "Please input a valid user_id (Int)."
+            })
+        }
+
         const start_time_ = new Date(start_time);
 
         if (isNaN(start_time_.getTime())) {

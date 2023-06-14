@@ -270,15 +270,17 @@ router.delete('/:id', async(req, res) => {
         const ratingValues = ratingPlace.map((rating) => rating.rating);
         const totalRating = ratingValues.reduce((sum, rating) => sum + rating, 0);
         const averageRating = totalRating / ratingValues.length;
-
-        const updateRating = await prisma.place.update({
-            where: {
-              id: parseInt(place.place_id),
-            },
-            data: {
-              rating: parseFloat(averageRating.toFixed(2)),
-            },
-        });
+        
+        if(averageRating){
+            const updateRating = await prisma.place.update({
+                where: {
+                  id: parseInt(place.place_id),
+                },
+                data: {
+                  rating: parseFloat(averageRating.toFixed(2)),
+                },
+            });
+        }
 
         res.json({ message: 'Rating successfully deleted' });
     } catch (error) {

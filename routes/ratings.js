@@ -12,10 +12,18 @@ router.post('/', async(req, res) => {
     const { user_id, place_id, rating } = req.body;
     const id = uuidv4();
 
-    const user_id_ = parseInt(user_id)
-    const place_id_ = parseInt(place_id)
 
     try {
+        const user_id_ = parseInt(user_id)
+        const place_id_ = parseInt(place_id)
+
+        if(!user_id_ || !place_id_){
+            return res.json({
+                error: true,
+                message: "Please input a valid user_id or place_id (Int)."
+            })
+        }
+
         const isPlaceIdValid = await prisma.place.findUnique({
             where: { id: place_id_ },
         });
@@ -83,6 +91,7 @@ router.post('/', async(req, res) => {
 
         res.json({ message: 'Rating successfully added' });
     } catch (error) {
+        console.error(error)
         res.status(500).json({ error: 'An error occurred while adding the rating.' });
     }
 });
@@ -110,12 +119,22 @@ router.get('/', async(req, res) => {
 
 // Update a rating
 router.put('/:id', async(req, res) => {
-    const ratingId = req.params.id;
+    const id = req.params.id;
     const { user_id, place_id, rating } = req.body;
 
     try {
+        const user_id_ = parseInt(user_id)
+        const place_id_ = parseInt(place_id)
+
+        if(!user_id_ || !place_id_){
+            return res.json({
+                error: true,
+                message: "Please input a valid user_id or place_id (Int)."
+            })
+        }
+
         const isPlaceIdValid = await prisma.place.findUnique({
-            where: { id: parseInt(place_id) },
+            where: { id: place_id_ },
         });
 
         if (!isPlaceIdValid) {
@@ -123,7 +142,7 @@ router.put('/:id', async(req, res) => {
         };
 
         const isUserIdValid = await prisma.user.findUnique({
-            where: { id: user_id },
+            where: { id: user_id_ },
         });
 
         if (!isUserIdValid) {
@@ -138,8 +157,8 @@ router.put('/:id', async(req, res) => {
         const check = await prisma.rating.findFirst({
             where: {
                 AND: [
-                  { userId: user_id },
-                  { placeId: parseInt(place_id) },
+                  { user_id: user_id_ },
+                  { place_id: place_id_ },
                 ],
             },
         });
@@ -152,18 +171,18 @@ router.put('/:id', async(req, res) => {
 
         const ratings = await prisma.rating.update({
             data: {
-                userId: user_id,
-                placeId: parseInt(place_id),
+                user_id: user_id_,
+                place_id: place_id_,
                 rating: parseFloat(rating)
             },
             where: {
-                id: ratingId
+                id
             }
         });
 
         const ratingPlace = await prisma.rating.findMany({
             where: {
-              placeId: parseInt(place_id)
+              place_id: place_id_
             },
         });
 
@@ -173,7 +192,7 @@ router.put('/:id', async(req, res) => {
 
         const updateRating = await prisma.place.update({
             where: {
-              id: parseInt(place_id),
+              id: place_id_,
             },
             data: {
               rating: parseFloat(averageRating.toFixed(2)),
@@ -188,11 +207,11 @@ router.put('/:id', async(req, res) => {
 
 // Get a rating by id
 router.get('/:id', async(req, res) => {
-    const ratingId = req.params.id;
+    const id = req.params.id;
 
     try {
         const isRatingIdValid = await prisma.rating.findUnique({
-            where: { id: ratingId },
+            where: { id },
         });
 
         if (!isRatingIdValid) {
@@ -201,7 +220,7 @@ router.get('/:id', async(req, res) => {
 
         const ratings = await prisma.rating.findUnique({
             where: {
-                id: ratingId
+                id
             },
             include: {
                 place: true
@@ -216,11 +235,11 @@ router.get('/:id', async(req, res) => {
 
 // Delete a rating
 router.delete('/:id', async(req, res) => {
-    const ratingId = req.params.id;
+    const id = req.params.id;
 
     try {
         const isRatingIdValid = await prisma.rating.findUnique({
-            where: { id: ratingId },
+            where: { id },
         });
 
         if (!isRatingIdValid) {
@@ -229,22 +248,22 @@ router.delete('/:id', async(req, res) => {
 
         const place = await prisma.rating.findFirst({
             where: {
-                id: ratingId
+                id
             },
             select:{
-                placeId: true
+                place_id: true
             }
         });
 
         const ratings = await prisma.rating.delete({
             where: {
-                id: ratingId
+                id
             }
         });
 
         const ratingPlace = await prisma.rating.findMany({
             where: {
-              placeId: parseInt(place.placeId)
+              place_id: parseInt(place.place_id)
             },
         });
 
@@ -254,7 +273,7 @@ router.delete('/:id', async(req, res) => {
 
         const updateRating = await prisma.place.update({
             where: {
-              id: parseInt(place.placeId),
+              id: parseInt(place.place_id),
             },
             data: {
               rating: parseFloat(averageRating.toFixed(2)),
@@ -263,7 +282,6 @@ router.delete('/:id', async(req, res) => {
 
         res.json({ message: 'Rating successfully deleted' });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'An error occurred while deleting the rating.' });
     }
 });

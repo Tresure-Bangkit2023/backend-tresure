@@ -1,5 +1,6 @@
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
+const axios = require('axios');
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -344,6 +345,129 @@ router.get('/:id/plan', verifyToken, async(req, res) => {
         res.status(500).json({
             error: true,
             message: 'An error occurred while getting the plan of user.'
+        });
+    }
+});
+
+router.post('/predict', verifyToken, async(req, res) => {
+    const { username, location } = req.body
+    
+    try {
+        const user = await prisma.user.findFirst({
+            where: {
+                username
+            },
+            select:{
+                id: true
+            }
+        });
+
+        if(!user){
+            return res.status(404).json({
+                error: true,
+                message: "User not found!"
+            });
+        }
+
+        const user_id = user.id;
+
+        let placesWithoutRating;
+        
+        // Get all of the city
+        const distinctCities = await prisma.place.findMany({
+            select: {
+              city: true
+            },
+            distinct: ['city']
+        });
+          
+        const isInDistinctCities = distinctCities.map(city => city.city).includes(location);
+
+        if(isInDistinctCities){
+            placesWithoutRating = await prisma.place.findMany({
+                where: {
+                  NOT: {
+                    ratings: {
+                      some: {
+                        user_id,
+                      },
+                    },
+                  },
+                  city: location
+                },
+                select: {
+                    id: true
+                },
+                orderBy: {
+                    id: 'asc'
+                }
+            });
+        }
+
+        else{
+            placesWithoutRating = await prisma.place.findMany({
+                where: {
+                  NOT: {
+                    ratings: {
+                      some: {
+                        user_id,
+                      },
+                    },
+                  },
+                },
+                select: {
+                    id: true
+                },
+                orderBy: {
+                    id: 'asc'
+                }
+            });
+        }
+        
+        const ids = placesWithoutRating.map(places => places.id);
+        const filteredIds = ids.filter(id => id < 437);
+        const places_not_visited = filteredIds.join(", ");
+
+        // Get from model API
+        const data = {
+            'user_id': user_id,
+            'places_not_visited': places_not_visited
+        };
+
+        let response;
+          
+        axios.post('https://tresure-model-v5cbzwlk4q-uc.a.run.app/predict', data)
+        .then(async r => {
+            response = r.data;
+            const placeIds = response['data']
+
+            const recomendationPlaces = await prisma.place.findMany({
+                where: {
+                    id: {
+                        in: placeIds
+                    }
+                },
+                orderBy: {
+                    city: 'asc'
+                }
+            });
+
+            res.json({
+                error: false,
+                data: recomendationPlaces
+            });
+        })
+        .catch(error => {
+            console.error(error)
+            return res.status(500).json({
+                error: true,
+                message: "An error occured when getting the recomendation."
+            });
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: true,
+            message: 'An error occurred while doing recomends.'
         });
     }
 });

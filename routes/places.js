@@ -58,9 +58,15 @@ router.get('/', async(req, res) => {
         const places = await prisma.place.findMany();
 
         if (places.length > 0) {
-            res.json(places);
+            res.json({
+                error: false,
+                data: places
+            });
         } else {
-            res.json({ message: 'No places yet!' });
+            res.json({ 
+                error: false,
+                message: 'No places yet!' 
+            });
         }
     } catch (error) {
         console.error(error);
@@ -85,7 +91,10 @@ router.get('/search', async(req, res) => {
         });
 
         if (places.length > 0) {
-            res.json(places);
+            res.json({
+                error: false,
+                data: places
+            });
         } else {
             res.json({ message: 'No places found for the specified category.' });
         }

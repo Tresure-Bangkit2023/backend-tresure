@@ -116,9 +116,10 @@ router.get('/:id', async(req, res) => {
 // Update a plan by id
 router.put('/:id', async(req, res) => {
     const planId = req.params.id;
-    const {title, num_of_people, city, start_location, start_time } = req.body;
+    const {title, city, start_location, start_time } = req.body;
 
     try {
+        const num_of_people = parseInt(req.body.num_of_people);
         const budget = parseFloat(req.body.budget);
         const user_id = parseInt(req.body.user_id);
 

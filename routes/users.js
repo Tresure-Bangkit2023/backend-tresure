@@ -109,33 +109,6 @@ router.post('/login', async(req, res) => {
     }
 });
 
-// logout user function
-router.post("/logout", async(req, res) => {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
-
-    if (!token) {
-        return res.status(401).json({ message: "No token provided" });
-    }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
-        // Hapus token dari tabel Token di Prisma
-        await prisma.token.deleteMany({
-            where: {
-                token: token,
-            },
-        });
-
-        const expiredToken = jwt.sign({}, process.env.JWT_SECRET_KEY, { expiresIn: 0 });
-
-        return res.json({ token: expiredToken, message: "Logout successful" });
-    } catch (error) {
-        return res.status(401).json({ message: "Invalid token" });
-    }
-});
-
 // update user function
 router.put('/:id', verifyToken, async(req, res) => {
     const { username, password, email, full_name, location, profile_pic, solo_traveler } = req.body;
@@ -372,6 +345,7 @@ router.post('/predict', verifyToken, async(req, res) => {
         const user_id = user.id;
 
         let placesWithoutRating;
+        let response;
         
         // Get all of the city
         const distinctCities = await prisma.place.findMany({
@@ -433,8 +407,6 @@ router.post('/predict', verifyToken, async(req, res) => {
             'user_id': user_id,
             'places_not_visited': places_not_visited
         };
-
-        let response;
           
         axios.post('https://tresure-model-v5cbzwlk4q-uc.a.run.app/predict', data)
         .then(async r => {

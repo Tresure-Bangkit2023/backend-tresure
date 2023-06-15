@@ -305,10 +305,10 @@ router.get('/:id/plan', verifyToken, async(req, res) => {
                 plan: {
                     include: {
                         PlanPlace: true,
+                    },
+                    orderBy: {
+                        createdAt: 'desc',
                     }
-                },
-                orderBy: {
-                    createdAt: 'desc',
                 }
             },
         });

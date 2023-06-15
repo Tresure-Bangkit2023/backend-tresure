@@ -54,6 +54,7 @@ router.post('/', async(req, res) => {
             error: false,
             message: 'Plan created successfully' });
     } catch (error) {
+        console.error(error)
         res.status(500).json({ 
             error: true,
             message: 'An error occurred while adding the plan.' });

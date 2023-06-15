@@ -9,10 +9,11 @@ router.use(express.json());
 
 // Create a new plan
 router.post('/', async(req, res) => {
-    const { title, num_of_people, city, start_location, start_time } = req.body;
+    const { title, city, start_location, start_time } = req.body;
     const id = uuidv4();
 
     try {
+        const num_of_people = parseInt(req.body.num_of_people);
         const budget = parseFloat(req.body.budget);
         const user_id = parseInt(req.body.user_id);
 
@@ -23,7 +24,7 @@ router.post('/', async(req, res) => {
             })
         }
 
-        const start_time_ = new Date(start_time)
+        const start_time_ = new Date(start_time);
 
         if (isNaN(start_time_.getTime())) {
             return res.status(404).json({ message: 'Please input a valid date time!' })
@@ -49,6 +50,8 @@ router.post('/', async(req, res) => {
                 budget
             },
         });
+        
+        
 
         res.json({ 
             error: false,

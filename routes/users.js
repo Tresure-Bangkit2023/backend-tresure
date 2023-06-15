@@ -304,7 +304,11 @@ router.get('/:id/plan', verifyToken, async(req, res) => {
             include: {
                 plan: {
                     include: {
-                        PlanPlace: true,
+                        PlanPlace: {
+                            include: {
+                                place: true
+                            }
+                        }
                     },
                     orderBy: {
                         createdAt: 'desc',

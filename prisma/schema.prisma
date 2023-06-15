@@ -48,6 +48,7 @@ model Plan {
   start_location String
   start_time     DateTime
   budget         Float
+  createdAt      DateTime?    @default(now())
   user           User        @relation(fields: [user_id], references: [id])
   PlanPlace      PlanPlace[]
   places         Place[]     @relation("PlanPlace")

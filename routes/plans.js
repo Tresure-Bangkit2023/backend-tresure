@@ -13,6 +13,7 @@ router.post('/', async(req, res) => {
     const id = uuidv4();
 
     try {
+        const createdAt = new Date();
         const num_of_people = parseInt(req.body.num_of_people);
         const budget = parseFloat(req.body.budget);
         const user_id = parseInt(req.body.user_id);
@@ -47,12 +48,11 @@ router.post('/', async(req, res) => {
                 city,
                 start_location,
                 start_time: start_time_,
-                budget
+                budget,
+                createdAt
             },
         });
         
-        
-
         res.json({ 
             error: false,
             message: 'Plan created successfully' });
@@ -67,7 +67,11 @@ router.post('/', async(req, res) => {
 // Get all plans
 router.get('/', async(req, res) => {
     try {
-        const plans = await prisma.plan.findMany();
+        const plans = await prisma.plan.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
 
         if (Object.keys(plans).length > 0) {
             res.json({

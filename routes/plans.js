@@ -48,9 +48,13 @@ router.post('/', async(req, res) => {
             },
         });
 
-        res.json({ message: 'Plan created successfully' });
+        res.json({ 
+            error: false,
+            message: 'Plan created successfully' });
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while adding the plan.' });
+        res.status(500).json({ 
+            error: true,
+            message: 'An error occurred while adding the plan.' });
     }
 });
 
@@ -60,12 +64,19 @@ router.get('/', async(req, res) => {
         const plans = await prisma.plan.findMany();
 
         if (Object.keys(plans).length > 0) {
-            res.json(plans);
+            res.json({
+                error: false,
+                data: plans
+            });
         } else {
-            res.json({ message: 'No plan yet!' })
+            res.json({ 
+                error: false,
+                message: 'No plan yet!' })
         }
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred while getting all of plans.' });
+        res.status(500).json({ 
+            error: true,
+            message: 'An error occurred while getting all of plans.' });
     }
 });
 

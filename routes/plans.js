@@ -13,6 +13,7 @@ router.post('/', async(req, res) => {
     const id = uuidv4();
 
     try {
+        const budget = parseFloat(req.body.budget);
         const user_id = parseInt(req.body.user_id);
 
         if(!user_id){
@@ -45,6 +46,7 @@ router.post('/', async(req, res) => {
                 city,
                 start_location,
                 start_time: start_time_,
+                budget
             },
         });
 
@@ -113,6 +115,7 @@ router.put('/:id', async(req, res) => {
     const {title, num_of_people, city, start_location, start_time } = req.body;
 
     try {
+        const budget = parseFloat(req.body.budget);
         const user_id = parseInt(req.body.user_id);
 
         if(!user_id){
@@ -151,7 +154,8 @@ router.put('/:id', async(req, res) => {
                 num_of_people,
                 city,
                 start_location,
-                start_time: start_time_
+                start_time: start_time_,
+                budget
             },
             where: {
                 id: planId

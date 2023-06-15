@@ -47,6 +47,7 @@ model Plan {
   city           String
   start_location String
   start_time     DateTime
+  budget         Float
   user           User        @relation(fields: [user_id], references: [id])
   PlanPlace      PlanPlace[]
   places         Place[]     @relation("PlanPlace")

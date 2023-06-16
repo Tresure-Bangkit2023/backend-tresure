@@ -1,6 +1,8 @@
 # Backend Tresure Application
 This is a repository of API for Tresure Application using Express.js, Prisma, and MySQL. This project aims to develop an API that can be used to interact with data in MySQL databases.
 
+![User Api](https://github.com/Tresure-Bangkit2023/backend-tresure/blob/main/cloudarchi.png?raw=true)
+
 ## Description
 This project uses Express.js as a framework for developing APIs. Express.js allows you to easily create API routes, handle HTTP requests, and organize application business logic.
 

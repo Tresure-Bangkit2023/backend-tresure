@@ -15,5 +15,9 @@ MySQL is used as a relational database management system (RDBMS) that will store
 - Integrate with machine learning model API to obtain tourist destination recommendations.
 - Access restriction by using JWT (JSON Web Token) to protect specific endpoints and ensure security in the API.
 
+## URL
+- Default URL: '"https://tresure-app-v5cbzwlk4q-uc.a.run.app/"'
+- URL for Model: '"https://tresure-model-v5cbzwlk4q-uc.a.run.app/"'
+
 ## API Documentation
 Full documentation on using the API can be found at [this link](https://github.com/Tresure-Bangkit2023/backend-tresure/blob/main/api-docs.md).

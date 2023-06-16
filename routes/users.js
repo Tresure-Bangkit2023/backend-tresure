@@ -224,11 +224,7 @@ router.delete('/:id', verifyToken, async(req, res) => {
 
 router.get('/', verifyToken, async(req, res) => {
     try {
-        const users = await prisma.user.findMany({
-            select: {
-                password: {not: true}
-            }
-        });
+        const users = await prisma.user.findMany();
 
         if (Object.keys(users).length > 0) {
             res.json({
@@ -242,6 +238,7 @@ router.get('/', verifyToken, async(req, res) => {
             });
         }
     } catch (error) {
+        console.error(error)
         res.status(500).json({
             error: true,
             message: 'An error occurred while getting all users.'

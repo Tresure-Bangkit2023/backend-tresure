@@ -429,9 +429,6 @@ router.post('/predict', verifyToken, async(req, res) => {
                     id: {
                         in: placeIds
                     }
-                },
-                orderBy: {
-                    city: 'asc'
                 }
             });
 

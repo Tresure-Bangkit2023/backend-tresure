@@ -6,7 +6,7 @@ router.get('/', async(req, res) => {
     try {
         res.status(200).json({
             error: false,
-            message: "Hello, if you get this message it's mean this service is running."
+            message: "Hello, if you get this message, it means this service is running."
         });
     } catch (error) {
         res.status(500).json({

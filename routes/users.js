@@ -406,9 +406,6 @@ router.post('/predict', verifyToken, async(req, res) => {
                 },
                 select: {
                     id: true
-                },
-                orderBy: {
-                    id: 'asc'
                 }
             });
         }

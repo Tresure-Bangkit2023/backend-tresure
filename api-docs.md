@@ -3,7 +3,7 @@ This is API Documentation for Tresure Application
 # 📁 Collection: User 
 
 
-## End-point: register user deploy
+## Register User
 Request for Register User
 ### Method: POST
 >```
@@ -32,7 +32,7 @@ Request for Register User
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: login user deploy
+## Login User
 Request for login users
 ### Method: POST
 >```
@@ -59,7 +59,7 @@ Request for login users
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: get user deploy
+## Get All User
 Request for get all users
 ### Method: GET
 >```
@@ -96,36 +96,6 @@ Request for get all users
             "location": null,
             "profile_pic": null,
             "solo_traveler": null
-        },
-        {
-            "id": 10002,
-            "username": "a",
-            "password": "$2b$10$7C.k2GOQJDQjY1vTqIJSQOsiMD41jcOYSYb9dHmM4BicHtEmUr/o6",
-            "email": "a@a.a",
-            "full_name": "a",
-            "location": null,
-            "profile_pic": null,
-            "solo_traveler": null
-        },
-        {
-            "id": 10003,
-            "username": "test",
-            "password": "$2b$10$2Lr1Nn1c.VSFiFIAe6ABXuHv9YHcFkJTTg4/dG1X9OedgY1.ui6JK",
-            "email": "test@gmail.com",
-            "full_name": "test",
-            "location": null,
-            "profile_pic": null,
-            "solo_traveler": null
-        },
-        {
-            "id": 10004,
-            "username": "reza",
-            "password": "$2b$10$vlewNTnAqFV8oKJ7sJPDFu71eUyS4JADYiCLwnAjo88R7pH3GciLe",
-            "email": "aee@gmail.com",
-            "full_name": "reza ae",
-            "location": "Yogyakarta",
-            "profile_pic": null,
-            "solo_traveler": null
         }
     ]
 }
@@ -134,11 +104,11 @@ Request for get all users
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: get user by id deploy
+## Get User by Id
 Request for get user by ID
 ### Method: GET
 >```
->https://tresure-app-v5cbzwlk4q-uc.a.run.app/users/10002
+>https://tresure-app-v5cbzwlk4q-uc.a.run.app/users/10000
 >```
 ### 🔑 Authentication bearer
 
@@ -152,11 +122,11 @@ Request for get user by ID
 {
     "error": false,
     "data": {
-        "id": 10002,
-        "username": "a",
-        "password": "$2b$10$7C.k2GOQJDQjY1vTqIJSQOsiMD41jcOYSYb9dHmM4BicHtEmUr/o6",
-        "email": "a@a.a",
-        "full_name": "a",
+        "id": 10000,
+        "username": "alip",
+        "password": "$2b$10$FumK0RGmr5wpUoMOG2NdtOZM.jCjbkIThC5S1w7TtB0gx.zPY/KgK",
+        "email": "alip@gmail.com",
+        "full_name": "Alip Raihan",
         "location": null,
         "profile_pic": null,
         "solo_traveler": null,
@@ -168,10 +138,9 @@ Request for get user by ID
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: update user deploy
+## Update User
 Request for update user information
 
-_**Masih error yang ini**_
 ### Method: PUT
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/users/10004
@@ -206,25 +175,7 @@ _**Masih error yang ini**_
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: logout user deploy
-Request for logout users
-
-_**Masih belum di upload yang ini**_
-### Method: POST
->```
->https://tresure-app-v5cbzwlk4q-uc.a.run.app/users/logout
->```
-### 🔑 Authentication bearer
-
-|Param|value|Type|
-|---|---|---|
-|token|eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTAwMDQsInVzZXJuYW1lIjoicmV6YSIsImlhdCI6MTY4Njc0OTM2NywiZXhwIjoxNjg2ODM1NzY3fQ.-QbSXNuw2zsCrmgBCxNPg4fFl0YJPfYvHTJyvY-pdI8|string|
-
-
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-## End-point: delete user deploy
+## Delete User
 Request for delete user
 ### Method: DELETE
 >```
@@ -262,7 +213,7 @@ Request for delete user
 # 📁 Collection: Plan 
 
 
-## End-point: create plan
+## Create Plan
 ### Method: POST
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/plans
@@ -297,7 +248,7 @@ Request for delete user
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: get all plans
+## Get All Plans
 ### Method: GET
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/plans
@@ -327,7 +278,7 @@ Request for delete user
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: get plans by id
+## Get Plans by Id
 ### Method: GET
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/plans/3146c49b-62b6-48c0-816a-28d6b0e766ab
@@ -365,7 +316,7 @@ Request for delete user
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: update plans by id
+## Update Plans
 ### Method: PUT
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/plans/3146c49b-62b6-48c0-816a-28d6b0e766ab
@@ -401,7 +352,7 @@ Request for delete user
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: delete plans
+## Delete Plans
 ### Method: DELETE
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/plans/3146c49b-62b6-48c0-816a-28d6b0e766ab
@@ -425,7 +376,7 @@ Request for delete user
 # 📁 Collection: Categories 
 
 
-## End-point: add categories
+## Add Categories
 ### Method: POST
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/categories
@@ -456,7 +407,7 @@ Request for delete user
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: get all categories
+## Get All Categories
 ### Method: GET
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/categories
@@ -505,7 +456,7 @@ Request for delete user
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: get categories by id
+## Get Categories by Id
 ### Method: GET
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/categories/1
@@ -534,7 +485,7 @@ Request for delete user
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: update categories
+## Update Categories
 ### Method: PUT
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/categories/1
@@ -564,7 +515,7 @@ Request for delete user
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: delete categories
+## Delete Categories
 ### Method: DELETE
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/categories/7
@@ -588,7 +539,7 @@ Request for delete user
 # 📁 Collection: Places 
 
 
-## End-point: add places
+## Add Places
 ### Method: POST
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/places
@@ -626,7 +577,7 @@ Request for delete user
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: get all places
+## Get All Places
 ### Method: GET
 >```
 >https://tresure-app-v5cbzwlk4q-uc.a.run.app/places

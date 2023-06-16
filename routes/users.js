@@ -99,7 +99,8 @@ router.post('/login', async(req, res) => {
         res.status(200).json({
             error: false,
             message: 'Login success!',
-            token
+            token,
+            user_id: user.id
         });
     } catch (error) {
         res.status(500).json({
@@ -237,6 +238,7 @@ router.get('/', verifyToken, async(req, res) => {
             });
         }
     } catch (error) {
+        console.error(error)
         res.status(500).json({
             error: true,
             message: 'An error occurred while getting all users.'
@@ -303,7 +305,17 @@ router.get('/:id/plan', verifyToken, async(req, res) => {
             include: {
                 plan: {
                     include: {
-                        PlanPlace: true,
+                        PlanPlace: {
+                            include: {
+                                place: true
+                            },
+                            orderBy: {
+                                depart_time: 'asc'
+                            }
+                        }
+                    },
+                    orderBy: {
+                        createdAt: 'desc',
                     }
                 }
             },
@@ -391,9 +403,6 @@ router.post('/predict', verifyToken, async(req, res) => {
                 },
                 select: {
                     id: true
-                },
-                orderBy: {
-                    id: 'asc'
                 }
             });
         }
@@ -418,9 +427,6 @@ router.post('/predict', verifyToken, async(req, res) => {
                     id: {
                         in: placeIds
                     }
-                },
-                orderBy: {
-                    city: 'asc'
                 }
             });
 

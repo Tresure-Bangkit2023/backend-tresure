@@ -8,6 +8,7 @@ const planPlaceRouter = require('./routes/plan_places');
 const verifyToken = require('./middleware/auth');
 const userLikedRouter = require('./routes/userLikedCategory');
 const ratingRouter = require('./routes/ratings');
+const welcomeRouter = require('./routes/welcome');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -25,6 +26,7 @@ app.use('/plans', verifyToken, planRouter);
 app.use('/planplace', verifyToken, planPlaceRouter);
 app.use('/userLikedCategory', verifyToken, userLikedRouter);
 app.use('/ratings', verifyToken, ratingRouter);
+app.use('/', welcomeRouter);
 
 
 // Start the server

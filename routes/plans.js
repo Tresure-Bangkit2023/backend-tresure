@@ -9,10 +9,12 @@ router.use(express.json());
 
 // Create a new plan
 router.post('/', async(req, res) => {
-    const { title, num_of_people, city, start_location, start_time } = req.body;
+    const { title, city, start_location, start_time } = req.body;
     const id = uuidv4();
 
     try {
+        const createdAt = new Date();
+        const num_of_people = parseInt(req.body.num_of_people);
         const budget = parseFloat(req.body.budget);
         const user_id = parseInt(req.body.user_id);
 
@@ -23,7 +25,7 @@ router.post('/', async(req, res) => {
             })
         }
 
-        const start_time_ = new Date(start_time)
+        const start_time_ = new Date(start_time);
 
         if (isNaN(start_time_.getTime())) {
             return res.status(404).json({ message: 'Please input a valid date time!' })
@@ -46,14 +48,16 @@ router.post('/', async(req, res) => {
                 city,
                 start_location,
                 start_time: start_time_,
-                budget
+                budget,
+                createdAt
             },
         });
-
+        
         res.json({ 
             error: false,
             message: 'Plan created successfully' });
     } catch (error) {
+        console.error(error)
         res.status(500).json({ 
             error: true,
             message: 'An error occurred while adding the plan.' });
@@ -63,7 +67,11 @@ router.post('/', async(req, res) => {
 // Get all plans
 router.get('/', async(req, res) => {
     try {
-        const plans = await prisma.plan.findMany();
+        const plans = await prisma.plan.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
 
         if (Object.keys(plans).length > 0) {
             res.json({
@@ -112,9 +120,10 @@ router.get('/:id', async(req, res) => {
 // Update a plan by id
 router.put('/:id', async(req, res) => {
     const planId = req.params.id;
-    const {title, num_of_people, city, start_location, start_time } = req.body;
+    const {title, city, start_location, start_time } = req.body;
 
     try {
+        const num_of_people = parseInt(req.body.num_of_people);
         const budget = parseFloat(req.body.budget);
         const user_id = parseInt(req.body.user_id);
 

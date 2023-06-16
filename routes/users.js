@@ -307,6 +307,9 @@ router.get('/:id/plan', verifyToken, async(req, res) => {
                         PlanPlace: {
                             include: {
                                 place: true
+                            },
+                            orderBy: {
+                                depart_time: 'asc'
                             }
                         }
                     },

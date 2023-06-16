@@ -224,7 +224,11 @@ router.delete('/:id', verifyToken, async(req, res) => {
 
 router.get('/', verifyToken, async(req, res) => {
     try {
-        const users = await prisma.user.findMany();
+        const users = await prisma.user.findMany({
+            select: {
+                password: {not: true}
+            }
+        });
 
         if (Object.keys(users).length > 0) {
             res.json({

@@ -1,6 +1,4 @@
-# backend-tresure
-
-# Project: Tresure API Documentation
+# Tresure API Documentation
 This is API Documentation for Tresure Application
 # 📁 Collection: User 
 
